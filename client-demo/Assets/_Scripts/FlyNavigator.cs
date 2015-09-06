@@ -4,7 +4,10 @@ using System.Collections;
 public class FlyNavigator : MonoBehaviour {
 
 	[SerializeField]
-	private float speed = 1;
+	private float translationSpeed = 1;
+
+	[SerializeField]
+	private float rotationSpeed = 50;
 
 	private void OnGUI ()
 	{
@@ -19,7 +22,7 @@ public class FlyNavigator : MonoBehaviour {
 		rotation += Vector3.up * Input.GetAxis("Mouse X");
 		rotation += Vector3.left * Input.GetAxis("Mouse Y");
 
-		return rotation;
+		return rotation * rotationSpeed * Time.deltaTime;
 	}
 	
 	private Vector3 GetTranslation()
@@ -40,6 +43,6 @@ public class FlyNavigator : MonoBehaviour {
 			if (Input.GetKey (KeyCode.S)) translation += Vector3.back;
 		}
 
-		return translation.normalized * speed * Time.deltaTime;
+		return translation.normalized * translationSpeed * Time.deltaTime;
 	}
 }
