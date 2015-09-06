@@ -8,7 +8,6 @@ using System.Collections.Generic;
 public class PointCloudLoader : MonoBehaviour
 {
 	private static int POINT_LIMIT = 65535;
-    //private Vector3 CORRECTION = new Vector3(388372.5625f, 7519702f, 0f);
 
 	[SerializeField]
 	private string project = "";
