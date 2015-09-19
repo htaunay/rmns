@@ -45,4 +45,9 @@ public class FlyNavigator : MonoBehaviour {
 
 		return translation.normalized * translationSpeed * Time.deltaTime;
 	}
+
+	public void SetTranslationSpped(float speed)
+	{
+		translationSpeed = speed;
+	}
 }
