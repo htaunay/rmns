@@ -3,6 +3,9 @@ using System.Collections;
 
 public class PointRegisterer : MonoBehaviour {
 
+	[SerializeField]
+	private string url = "http://rmnsvm.cloudapp.net:8081";
+
 	private FlyNavigator navigator = null;
 
 	private void Start()
@@ -21,12 +24,12 @@ public class PointRegisterer : MonoBehaviour {
 
 		// When you pass a Hashtable as the third argument, JSON-encoding is assumed
 		// i.e. automatic Content-Type = application/json in header
-		HTTP.Request someRequest = new HTTP.Request( "post", "http://rmnsvm.cloudapp.net:8081", json );
+		HTTP.Request someRequest = new HTTP.Request( "post", url, json );
 		someRequest.Send( ( request ) => {
 
 			JSONObject obj = new JSONObject( request.response.Text );
 			float speed = float.Parse(obj.GetField("speed").ToString());
-			navigator.SetTranslationSpped(speed / 5.0f);
+			navigator.SetTranslationSpped(speed / /*TODO remove*/5.0f);
 		});
 	}
 }
