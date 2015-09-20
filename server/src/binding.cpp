@@ -136,9 +136,64 @@ void points(const FunctionCallbackInfo<Value>& args) {
     args.GetReturnValue().Set(output);
 }
 
+void speed(const FunctionCallbackInfo<Value>& args) {
+
+    Isolate* isolate = args.GetIsolate();
+    Local<Object> output = Object::New(isolate);
+
+    int code;
+    std::string msg;
+
+    Local<Object> posObj = args[0]->ToObject();
+    double x = posObj->Get(String::NewFromUtf8(isolate, "x"))->NumberValue();
+    double y = posObj->Get(String::NewFromUtf8(isolate, "y"))->NumberValue();
+    double z = posObj->Get(String::NewFromUtf8(isolate, "z"))->NumberValue();
+
+    double speed;
+    glm::vec3 nearest;
+    glm::vec3 pos(x,y,z);
+
+    if(speedCalculator->velocity(pos, nearest, speed))
+    {
+        Local<Object> result = Object::New(isolate);
+
+        // Set velocity
+        result->Set(String::NewFromUtf8(isolate, "velocity"),
+               Number::New(isolate, speed)); 
+
+        // Set Nearest point
+        Local<Object> nearestObj = Object::New(isolate);
+        nearestObj->Set(String::NewFromUtf8(isolate, "x"),
+               Number::New(isolate, nearest.x));
+        nearestObj->Set(String::NewFromUtf8(isolate, "y"),
+               Number::New(isolate, nearest.y));
+        nearestObj->Set(String::NewFromUtf8(isolate, "z"),
+               Number::New(isolate, nearest.z));
+        result->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
+
+        // Set outputs
+        output->Set(String::NewFromUtf8(isolate, "result"), result);
+        code = 200;
+        msg = "Velocity calculated with success";
+    }
+    else
+    {
+        code = 500;
+        msg = "Error while calculating optimal speed";
+    }
+
+    output->Set(String::NewFromUtf8(isolate, "code"),
+            Number::New(isolate, code));
+    output->Set(String::NewFromUtf8(isolate, "msg"),
+            String::NewFromUtf8(isolate, msg.c_str()));
+
+    args.GetReturnValue().Set(output);
+}
+
 void init(Handle<Object> target) {
     NODE_SET_METHOD(target, "reset", reset);
     NODE_SET_METHOD(target, "points", points);
+    NODE_SET_METHOD(target, "speed", speed);
 }
 
 NODE_MODULE(binding, init);

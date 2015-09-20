@@ -15,6 +15,7 @@
 
 # Nodejs
 build/
+npm-debug.log
 
 # Others
 .*.sw[ponm]

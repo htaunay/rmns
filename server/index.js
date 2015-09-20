@@ -14,7 +14,8 @@ var router = function(url, data, cb) {
             cb(binding.points(JSON.parse(data)));
             break;
 
-        case "/start":
+        case "/velocity":
+            cb(binding.speed(JSON.parse(data)));
             break;
 
         default:
@@ -41,8 +42,9 @@ var server = http.createServer(function (request, response) {
             response.setHeader("Content-Type", "application/json");
 
             var json = { "msg": obj.msg };
-            if(obj !== undefined && "result" in obj) {
-                json.result = obj.result;
+            if("result" in obj) {
+                for(var key in obj.result)
+                    json[key] = obj.result[key];
             }
 
             response.end(JSON.stringify(json));
