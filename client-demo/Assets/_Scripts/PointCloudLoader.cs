@@ -18,8 +18,12 @@ public class PointCloudLoader : MonoBehaviour
 	[SerializeField]
 	private bool correction = false;
 
+	private PointRegisterer registerer;
+
     public void Start()
     {
+		registerer = GameObject.Find("Main Camera").GetComponent<PointRegisterer>();
+
 		Object[] files = Resources.LoadAll(project, typeof(TextAsset));
         Debug.Log("Loading " + files.Length + " file(s)" );
 
@@ -33,6 +37,8 @@ public class PointCloudLoader : MonoBehaviour
 	private void Create(TextAsset file, GameObject root)
 	{
 		Vector3[] points = LoadPoints(file);
+		registerer.RegisterPoints(points);
+
 		int numGroups = Mathf.CeilToInt(points.Length * 1.0f / POINT_LIMIT * 1.0f);
 		
 		GameObject pointCloud = new GameObject(file.name);
