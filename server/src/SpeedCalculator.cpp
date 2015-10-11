@@ -7,6 +7,7 @@ SpeedCalculator::SpeedCalculator()
 
 bool SpeedCalculator::reset()
 {
+    _spheres.clear();
     _spatialStructure->clear();
     return true;
 }
@@ -25,6 +26,13 @@ bool SpeedCalculator::add_point(glm::vec3 point)
 bool SpeedCalculator::add_points(std::vector<glm::vec3> points)
 {
     _spatialStructure->insert(points.begin(), points.end());
+    return true;
+}
+
+bool SpeedCalculator::add_sphere(glm::vec3 center, double radius)
+{
+    Sphere* sphere = new Sphere(center, radius);
+    _spheres.push_back(sphere);
     return true;
 }
 

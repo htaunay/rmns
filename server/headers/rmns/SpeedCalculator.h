@@ -6,6 +6,8 @@
 #include <spatial/point_multiset.hpp>
 #include <spatial/neighbor_iterator.hpp>
 
+#include <rmns/Sphere.h>
+
 class SpeedCalculator
 {
     public:
@@ -16,12 +18,15 @@ class SpeedCalculator
 
         bool add_point(glm::vec3 point);
         bool add_points(std::vector<glm::vec3> points);
+        bool add_sphere(glm::vec3 center, double radius);
         bool velocity(glm::vec3 pos, glm::vec3& nearest, double& speed);
 
     private:
         typedef spatial::point_multiset<3, glm::vec3> Vec3Spatial;
         typedef spatial::neighbor_iterator<Vec3Spatial> Iterator;
         Vec3Spatial* _spatialStructure;
+
+        std::vector<Sphere*> _spheres;
 };
 
 #endif

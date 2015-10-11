@@ -8,7 +8,7 @@
 
 using namespace v8;
 
-int GetArrayLength(const FunctionCallbackInfo<Value>& args)
+int GetArrayLength(const FunctionCallbackInfo<Value>& args, bool threeCheck)
 {
     if (args.Length() != 1 || !args[0]->IsArray())
         return -1;
@@ -19,49 +19,11 @@ int GetArrayLength(const FunctionCallbackInfo<Value>& args)
     Local<Value> arrayLengthVal = arrayObj->Get(lengthString);
     int length = arrayLengthVal->ToObject()->Uint32Value();
 
-    if(length % 3 != 0)
+    if(threeCheck && length % 3 != 0)
         return -1;
 
     return length;
 }
-
-//void GetSpeed(const FunctionCallbackInfo<Value>& args) {
-//
-//    Isolate* isolate = args.GetIsolate();
-//
-//    if (args.Length() != 3) {
-//
-//        isolate->ThrowException(Exception::TypeError(
-//            String::NewFromUtf8(isolate, "Wrong number of arguments")));
-//        return;
-//    }
-//
-//    if (!args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber()) {
-//
-//        isolate->ThrowException(Exception::TypeError(
-//            String::NewFromUtf8(isolate, "Wrong arguments types")));
-//        return;
-//    }
-//
-//    float x = args[0]->NumberValue();
-//    float y = args[1]->NumberValue();
-//    float z = args[2]->NumberValue();
-//
-//    float distance = glm::length(glm::vec3(x, y, z) - glm::vec3(0, 0, 0));
-//
-//    //typedef spatial::point_multiset<1, float> runtime_container;
-//    //runtime_container container();
-//
-//    // Now declare the container with the user-defined accessor
-//    //spatial::point_multiset<3, glm::vec3> container;
-//    //container.insert(glm::vec3(1.0f, 2.0f, 3.0f));
-//    //container.insert(glm::vec3(1.0f, 2.0f, 3.0f));
-//
-//    //std::cout << "There are " << container.size()
-//    //    << " elements in space.\n";
-//
-//    args.GetReturnValue().Set(distance);
-//}
 
 SpeedCalculator* speedCalculator = new SpeedCalculator();
 
@@ -103,7 +65,7 @@ void points(const FunctionCallbackInfo<Value>& args) {
     int code;
     std::string msg;
 
-    int length = GetArrayLength(args);
+    int length = GetArrayLength(args, true);
     if(length < 0)
     {
         code = 400;
@@ -136,7 +98,58 @@ void points(const FunctionCallbackInfo<Value>& args) {
     args.GetReturnValue().Set(output);
 }
 
-void speed(const FunctionCallbackInfo<Value>& args) {
+void spheres(const FunctionCallbackInfo<Value>& args) {
+
+    Isolate* isolate = args.GetIsolate();
+
+    int code;
+    std::string msg;
+    Local<Object> output = Object::New(isolate);
+
+    Local<String> xStr = String::NewFromUtf8(isolate, "x"); 
+    Local<String> yStr = String::NewFromUtf8(isolate, "y"); 
+    Local<String> zStr = String::NewFromUtf8(isolate, "z"); 
+    Local<String> centerStr = String::NewFromUtf8(isolate, "center"); 
+    Local<String> radiusStr = String::NewFromUtf8(isolate, "radius"); 
+
+    int length = GetArrayLength(args, false);
+    if(length < 0)
+    {
+        code = 400;
+        msg = "Invalid argument type or size";
+    }
+    else
+    {
+        Local<Object> array = args[0]->ToObject();
+
+        for(int i = 0; i < length; i++)
+        {
+            Local<Object> sphereObj = array->Get(i)->ToObject();
+            Local<Object> center = sphereObj->Get(centerStr)->ToObject();
+            double x = center->Get(xStr)->NumberValue();
+            double y = center->Get(yStr)->NumberValue();
+            double z = center->Get(zStr)->NumberValue();
+            double radius = sphereObj->Get(radiusStr)->NumberValue();
+
+            speedCalculator->add_sphere(glm::vec3(x,y,z), radius);
+        }
+
+        code = 200;
+        std::stringstream stream;
+        stream << "Added " << length << " sphere(s) successfully. "
+            "The total now is " << speedCalculator->count() << " point(s)";
+        msg = stream.str();
+    }
+
+    output->Set(String::NewFromUtf8(isolate, "code"),
+            Number::New(isolate, code));
+    output->Set(String::NewFromUtf8(isolate, "msg"),
+            String::NewFromUtf8(isolate, msg.c_str()));
+
+    args.GetReturnValue().Set(output);
+}
+
+void velocity(const FunctionCallbackInfo<Value>& args) {
 
     Isolate* isolate = args.GetIsolate();
     Local<Object> output = Object::New(isolate);
@@ -191,9 +204,11 @@ void speed(const FunctionCallbackInfo<Value>& args) {
 }
 
 void init(Handle<Object> target) {
-    NODE_SET_METHOD(target, "reset", reset);
-    NODE_SET_METHOD(target, "points", points);
-    NODE_SET_METHOD(target, "speed", speed);
+    NODE_SET_METHOD(target, "reset",    reset);
+    NODE_SET_METHOD(target, "points",   points);
+    //NODE_SET_METHOD(target, "cubes",    cubes);
+    NODE_SET_METHOD(target, "spheres",  spheres);
+    NODE_SET_METHOD(target, "velocity", velocity);
 }
 
 NODE_MODULE(binding, init);

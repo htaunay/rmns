@@ -8,14 +8,27 @@ var router = function(url, data, cb) {
 
         case "/reset":
             cb(binding.reset());
+            console.log("Calling reset endpoint");
             break;
 
         case "/points":
             cb(binding.points(JSON.parse(data)));
+            console.log("Calling points endpoint");
+            break;
+
+        //case "/cubes":
+        //    cb(binding.points(JSON.parse(data)));
+        //    console.log("Calling cubes endpoint");
+        //    break;
+
+        case "/spheres":
+            cb(binding.spheres(JSON.parse(data)));
+            console.log("Calling spheres endpoint");
             break;
 
         case "/velocity":
-            cb(binding.speed(JSON.parse(data)));
+            cb(binding.velocity(JSON.parse(data)));
+            console.log("Calling velocity endpoint");
             break;
 
         default:
@@ -47,7 +60,7 @@ var server = http.createServer(function (request, response) {
                     json[key] = obj.result[key];
             }
 
-            response.end(JSON.stringify(json));
+            response.end(JSON.stringify(json) + "\n");
         });
     });
 });
