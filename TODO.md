@@ -11,6 +11,10 @@
 [ ] Lots of error checking
 [ ] Fix speed vs velocity
 [ ] Option to locally load points
+[ ] Define only once V8 strings
+[ ] Count which objs (e.g. spheres) are correctly inserted, and give feedback
+[ ] 80 col
+[ ] Add point array to avoid re-building the kd-tree
 
 ## Client Demo
 
