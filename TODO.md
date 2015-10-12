@@ -15,15 +15,17 @@
 [ ] Count which objs (e.g. spheres) are correctly inserted, and give feedback
 [ ] 80 col
 [ ] Add point array to avoid re-building the kd-tree
+[ ] check method case-conventions (oneTwo != one_two)
+[ ] Valgrind
 
 ## Client Demo
 
 [ ] Better file loading convention, last blank line is ugly
 [ ] Invert Y/Z option
-[ ] Solar System Demo
 [ ] Config file
 [ ] Create HTTP module for all server communication
 [ ] Reset on start
+[x] Solar System Demo
 
 ## Dox ideas
 

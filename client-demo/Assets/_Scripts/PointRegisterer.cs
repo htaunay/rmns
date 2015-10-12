@@ -18,7 +18,7 @@ public class PointRegisterer : MonoBehaviour {
 	{
 		navigator = GetComponent<FlyNavigator>();
 
-		sphere = GameObject.Find("Sphere").transform;
+		sphere = GameObject.Find("Nearest").transform;
 	}
 
 	private void FixedUpdate()
@@ -40,7 +40,7 @@ public class PointRegisterer : MonoBehaviour {
 				Debug.Log (request.response.Text);
 				JSONObject obj = new JSONObject( request.response.Text );
 				float speed = float.Parse(obj.GetField("velocity").ToString());
-				navigator.SetTranslationSpped(Mathf.Max(speed / /*TODO remove*/5.0f, 0.1f));
+				navigator.SetTranslationSpeed(Mathf.Max(speed / /*TODO remove*/5.0f, 0.1f));
 
 				JSONObject nearest = obj.GetField("nearest");
 				float x = float.Parse(nearest.GetField("x").ToString());

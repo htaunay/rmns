@@ -1,13 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FlyNavigator : MonoBehaviour {
+public class FlyNavigator : MonoBehaviour
+{
+	private Transform sphere;
+
+	[SerializeField]
+	public bool Activate = false;
 
 	[SerializeField]
 	private float translationSpeed = 1;
 
 	[SerializeField]
 	private float rotationSpeed = 50;
+
+	private void Strat()
+	{
+		sphere = GameObject.Find("Nearest").transform;
+	}
 
 	private void OnGUI ()
 	{
@@ -46,8 +56,14 @@ public class FlyNavigator : MonoBehaviour {
 		return translation.normalized * translationSpeed * Time.deltaTime;
 	}
 
-	public void SetTranslationSpped(float speed)
+	public void SetTranslationSpeed(float speed)
 	{
 		translationSpeed = speed;
+	}
+
+	private void FixedUpdate()
+	{
+		if(Activate)
+			Server.Instance.UpdateTranslationSpeed(transform.position, this, sphere);
 	}
 }
