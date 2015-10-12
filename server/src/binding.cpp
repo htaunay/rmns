@@ -40,7 +40,7 @@ void reset(const FunctionCallbackInfo<Value>& args) {
         code = 200;
         std::stringstream stream;
         stream << "Reset operation successful. Spatial structure currenlty "
-            << "has " << speedCalculator->count() << " points";
+            << "has " << speedCalculator->count_points() << " points";
         msg = stream.str();
     }
     else
@@ -86,7 +86,7 @@ void points(const FunctionCallbackInfo<Value>& args) {
         code = 200;
         std::stringstream stream;
         stream << "Added " << (length / 3) << " point(s) successfully. "
-            "The total now is " << speedCalculator->count() << " point(s)";
+            "The total now is " << speedCalculator->count_points() << " point(s)";
         msg = stream.str();
     }
 
@@ -109,6 +109,7 @@ void spheres(const FunctionCallbackInfo<Value>& args) {
     Local<String> xStr = String::NewFromUtf8(isolate, "x"); 
     Local<String> yStr = String::NewFromUtf8(isolate, "y"); 
     Local<String> zStr = String::NewFromUtf8(isolate, "z"); 
+    Local<String> idStr = String::NewFromUtf8(isolate, "id");
     Local<String> centerStr = String::NewFromUtf8(isolate, "center"); 
     Local<String> radiusStr = String::NewFromUtf8(isolate, "radius"); 
 
@@ -129,15 +130,16 @@ void spheres(const FunctionCallbackInfo<Value>& args) {
             double x = center->Get(xStr)->NumberValue();
             double y = center->Get(yStr)->NumberValue();
             double z = center->Get(zStr)->NumberValue();
+            int id = (int) sphereObj->Get(idStr)->NumberValue();
             double radius = sphereObj->Get(radiusStr)->NumberValue();
 
-            speedCalculator->add_sphere(glm::vec3(x,y,z), radius);
+            speedCalculator->update_sphere(id, glm::vec3(x,y,z), radius);
         }
 
         code = 200;
         std::stringstream stream;
         stream << "Added " << length << " sphere(s) successfully. "
-            "The total now is " << speedCalculator->count() << " point(s)";
+            "The total now is " << speedCalculator->count_spheres() << " sphere(s)";
         msg = stream.str();
     }
 
