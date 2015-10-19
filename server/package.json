@@ -1,0 +1,21 @@
+{
+    "name": "rmns",
+    "version": "0.0.1",
+    "description": "Remote Multiscale Navigation System",
+    "main": "index.js",
+    "scripts": {
+        "build": "rm -rf build && node-gyp configure && node-gyp build",
+        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/htaunay/rmns.git"
+    },
+    "author": "Henrique Taunay",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/htaunay/rmns/issues"
+    },
+    "homepage": "https://github.com/htaunay/rmns#readme"
+}

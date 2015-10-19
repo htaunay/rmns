@@ -13,5 +13,9 @@
 /*.pidb
 /*.booproj
 
+# Nodejs
+build/
+npm-debug.log
+
 # Others
-.*.swp
+.*.sw[ponm]
