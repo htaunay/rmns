@@ -23,12 +23,15 @@
 [ ] Better file loading convention, last blank line is ugly
 [ ] Invert Y/Z option
 [ ] Config file
-[ ] Create HTTP module for all server communication
-[ ] Reset on start
+[ ] Asteroid belt as point cloud
+[ ] Planet lables with distance
+[x] Create HTTP module for all server communication
+[x] Reset on start
 [x] Solar System Demo
 
 ## Dox ideas
 
 [ ] Known problem: async, every speed returns with a timestamp
+[ ] Dynamic object ids
 [ ] States
 
