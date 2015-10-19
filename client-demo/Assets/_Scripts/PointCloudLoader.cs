@@ -14,18 +14,23 @@ public class PointCloudLoader : MonoBehaviour
 
 	[SerializeField]
 	private float ratio = 1;
+
+	[SerializeField]
+	private Material material = null; 
 	
 	[SerializeField]
 	private bool correction = false;
+	
+	[SerializeField]
+	private bool invertYZ = false;
 
-	private PointRegisterer registerer;
+	[SerializeField]
+	private bool scaleFromAU = false;
 
     public void Start()
     {
-		registerer = GameObject.Find("Main Camera").GetComponent<PointRegisterer>();
-
 		Object[] files = Resources.LoadAll(project, typeof(TextAsset));
-        Debug.Log("Loading " + files.Length + " file(s)" );
+		// LOGGER Debug.Log("Loading " + files.Length + " file(s)" );
 
         GameObject parent = new GameObject("Points");
         foreach(Object file in files)
@@ -37,7 +42,7 @@ public class PointCloudLoader : MonoBehaviour
 	private void Create(TextAsset file, GameObject root)
 	{
 		Vector3[] points = LoadPoints(file);
-		registerer.RegisterPoints(points);
+		Server.Instance.RegisterPoints(points);
 
 		int numGroups = Mathf.CeilToInt(points.Length * 1.0f / POINT_LIMIT * 1.0f);
 		
@@ -67,12 +72,24 @@ public class PointCloudLoader : MonoBehaviour
 			
 			Vector3 CORRECTION = (correction) ? new Vector3(388372.5625f, 7519702f, 0f) : new Vector3(0,0,0);
 			
-			// Invert
-			float x = (float.Parse(pointList[0]) - CORRECTION.x) / ratio;
-			float y = (float.Parse(pointList[2]) - CORRECTION.z) / ratio;
-			float z = (float.Parse(pointList[1]) - CORRECTION.y) / ratio;
+
+			Vector3 point = Vector3.zero;
+			point.x = (float.Parse(pointList[0]) - CORRECTION.x) / ratio;
+			if(invertYZ)
+			{
+				point.y = (float.Parse(pointList[2]) - CORRECTION.z) / ratio;
+				point.z = (float.Parse(pointList[1]) - CORRECTION.y) / ratio;
+			}
+			else
+			{
+				point.y = (float.Parse(pointList[1]) - CORRECTION.y) / ratio;
+				point.z = (float.Parse(pointList[2]) - CORRECTION.z) / ratio;
+			}
+
+			if(scaleFromAU)
+				point *= Scales.Instance.GetScaledAu();
 			
-			points[i] = new Vector3(x,y,z);
+			points[i] = point;
 		}
 		
 		return points;
@@ -85,7 +102,7 @@ public class PointCloudLoader : MonoBehaviour
 		GameObject pointGroup = new GameObject (name + meshInd);
 		pointGroup.AddComponent<MeshFilter>();
 		pointGroup.AddComponent<MeshRenderer>();
-		pointGroup.renderer.material = null;//matVertex;
+		pointGroup.renderer.material = material;
 		
 		pointGroup.GetComponent<MeshFilter>().mesh = CreateMesh(points, meshInd, nPoints, POINT_LIMIT);
 		pointGroup.transform.parent = root.transform;

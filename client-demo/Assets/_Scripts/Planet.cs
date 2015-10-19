@@ -78,8 +78,8 @@ public class Planet : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
-		//UnityEditor.Handles.color = color;
-		//UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.up, distanceToSun);
+		UnityEditor.Handles.color = color;
+		UnityEditor.Handles.DrawWireDisc(Vector3.zero, Vector3.up, distanceToSun);
 	}
 
 	private float GetAngle()

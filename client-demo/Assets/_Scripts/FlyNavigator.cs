@@ -14,9 +14,10 @@ public class FlyNavigator : MonoBehaviour
 	[SerializeField]
 	private float rotationSpeed = 50;
 
-	private void Strat()
+	private void Start()
 	{
-		sphere = GameObject.Find("Nearest").transform;
+		GameObject go = GameObject.Find("Nearest");
+		if(go) sphere = go.transform;
 	}
 
 	private void OnGUI ()
