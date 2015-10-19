@@ -109,7 +109,7 @@ void SpeedCalculator::nearest_sphere(glm::vec3 pos, glm::vec3& nearest, float& d
         }
     }
 
-    distance = minDistance - sphere->getRadius();
+    distance = minDistance;
     glm::vec3 unit = glm::normalize(pos - sphere->getCenter());
     nearest = sphere->getCenter() + (((float) sphere->getRadius()) * unit);
 }
