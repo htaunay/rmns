@@ -1,19 +1,18 @@
+var rmns = require("./rmns")
 var http = require("http");
-var binding = require("./build/Release/binding"); 
+var binding = require("../build/Release/binding"); 
 
 // cb receives built obj
 var router = function(url, data, cb) {
 
     switch(url) {
 
-        case "/reset":
-            cb(binding.reset());
-            console.log("Calling reset endpoint");
+        case "/stats":
+            cb(binding.stats());
             break;
 
         case "/points":
-            cb(binding.points(JSON.parse(data)));
-            console.log("Calling points endpoint");
+            cb(rmns.register_points(data));
             break;
 
         //case "/cubes":
@@ -24,6 +23,11 @@ var router = function(url, data, cb) {
         case "/spheres":
             cb(binding.spheres(JSON.parse(data)));
             console.log("Calling spheres endpoint");
+            break;
+
+        case "/reset":
+            cb(binding.reset());
+            //console.log("Calling reset endpoint");
             break;
 
         case "/velocity":
@@ -40,7 +44,7 @@ var router = function(url, data, cb) {
     }
 }
 
-var server = http.createServer(function (request, response) {
+var server = module.exports = http.createServer(function (request, response) {
 
     var data = "";
     request.on("data", function(chunk) {

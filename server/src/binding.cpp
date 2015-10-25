@@ -8,7 +8,7 @@
 
 using namespace v8;
 
-int GetArrayLength(const FunctionCallbackInfo<Value>& args, bool threeCheck)
+int GetArrayLength(const FunctionCallbackInfo<Value>& args)
 {
     if (args.Length() != 1 || !args[0]->IsArray())
         return -1;
@@ -19,35 +19,26 @@ int GetArrayLength(const FunctionCallbackInfo<Value>& args, bool threeCheck)
     Local<Value> arrayLengthVal = arrayObj->Get(lengthString);
     int length = arrayLengthVal->ToObject()->Uint32Value();
 
-    if(threeCheck && length % 3 != 0)
-        return -1;
-
     return length;
 }
 
 SpeedCalculator* speedCalculator = new SpeedCalculator();
 
-void reset(const FunctionCallbackInfo<Value>& args) {
+void stats(const FunctionCallbackInfo<Value>& args) {
 
     Isolate* isolate = args.GetIsolate();
     Local<Object> output = Object::New(isolate);
 
-    int code;
-    std::string msg;
+    int numPoints = speedCalculator->count_points();
+    int numSpheres = speedCalculator->count_spheres();
 
-    if(speedCalculator->reset())
-    {
-        code = 200;
-        std::stringstream stream;
-        stream << "Reset operation successful. Spatial structure currenlty "
-            << "has " << speedCalculator->count_points() << " points";
-        msg = stream.str();
-    }
-    else
-    {
-        code = 500;
-        msg = "Internal server error - unable to reset spatial structure";
-    }
+    std::stringstream stream;
+    stream << "RMNS server running with:\n"
+        << numPoints << " registered point(s)\n"
+        << numSpheres << " registered sphere(s)\n";
+
+    int code = 200;
+    std::string msg = stream.str();
 
     output->Set(String::NewFromUtf8(isolate, "code"),
             Number::New(isolate, code));
@@ -57,43 +48,29 @@ void reset(const FunctionCallbackInfo<Value>& args) {
     args.GetReturnValue().Set(output);
 }
 
+/*!
+ * This method must receive an v8 number array, with a length multiple
+ * of three, and returns the total points already registered..
+ * Any other input may not result in expected behaviour. 
+ */
 void points(const FunctionCallbackInfo<Value>& args) {
 
     Isolate* isolate = args.GetIsolate();
     Local<Object> output = Object::New(isolate);
 
-    int code;
-    std::string msg;
+    int length = GetArrayLength(args);
+    Local<Object> array = args[0]->ToObject();
 
-    int length = GetArrayLength(args, true);
-    if(length < 0)
+    for(int i = 0; i < length; i+=3)
     {
-        code = 400;
-        msg = "Invalid argument type or size";
-    }
-    else
-    {
-        Local<Object> array = args[0]->ToObject();
-
-        for(int i = 0; i < length; i+=3)
-        {
-            float x = array->Get(i)->NumberValue();
-            float y = array->Get(i+1)->NumberValue();
-            float z = array->Get(i+2)->NumberValue();
-            speedCalculator->add_point(glm::vec3(x,y,z));
-        }
-
-        code = 200;
-        std::stringstream stream;
-        stream << "Added " << (length / 3) << " point(s) successfully. "
-            "The total now is " << speedCalculator->count_points() << " point(s)";
-        msg = stream.str();
+        float x = array->Get(i)->NumberValue();
+        float y = array->Get(i+1)->NumberValue();
+        float z = array->Get(i+2)->NumberValue();
+        speedCalculator->add_point(glm::vec3(x,y,z));
     }
 
-    output->Set(String::NewFromUtf8(isolate, "code"),
-            Number::New(isolate, code));
-    output->Set(String::NewFromUtf8(isolate, "msg"),
-            String::NewFromUtf8(isolate, msg.c_str()));
+    output->Set(String::NewFromUtf8(isolate, "total"),
+        Number::New(isolate, speedCalculator->count_points()));
 
     args.GetReturnValue().Set(output);
 }
@@ -113,7 +90,7 @@ void spheres(const FunctionCallbackInfo<Value>& args) {
     Local<String> centerStr = String::NewFromUtf8(isolate, "center"); 
     Local<String> radiusStr = String::NewFromUtf8(isolate, "radius"); 
 
-    int length = GetArrayLength(args, false);
+    int length = GetArrayLength(args);
     if(length < 0)
     {
         code = 400;
@@ -141,6 +118,36 @@ void spheres(const FunctionCallbackInfo<Value>& args) {
         stream << "Added " << length << " sphere(s) successfully. "
             "The total now is " << speedCalculator->count_spheres() << " sphere(s)";
         msg = stream.str();
+    }
+
+    output->Set(String::NewFromUtf8(isolate, "code"),
+            Number::New(isolate, code));
+    output->Set(String::NewFromUtf8(isolate, "msg"),
+            String::NewFromUtf8(isolate, msg.c_str()));
+
+    args.GetReturnValue().Set(output);
+}
+
+void reset(const FunctionCallbackInfo<Value>& args) {
+
+    Isolate* isolate = args.GetIsolate();
+    Local<Object> output = Object::New(isolate);
+
+    int code;
+    std::string msg;
+
+    if(speedCalculator->reset())
+    {
+        code = 200;
+        std::stringstream stream;
+        stream << "Reset operation successful. Spatial structure currently "
+            << "has " << speedCalculator->count_points() << " points";
+        msg = stream.str();
+    }
+    else
+    {
+        code = 500;
+        msg = "Internal server error - unable to reset spatial structure";
     }
 
     output->Set(String::NewFromUtf8(isolate, "code"),
@@ -206,10 +213,11 @@ void velocity(const FunctionCallbackInfo<Value>& args) {
 }
 
 void init(Handle<Object> target) {
-    NODE_SET_METHOD(target, "reset",    reset);
+    NODE_SET_METHOD(target, "stats",    stats);
     NODE_SET_METHOD(target, "points",   points);
     //NODE_SET_METHOD(target, "cubes",    cubes);
     NODE_SET_METHOD(target, "spheres",  spheres);
+    NODE_SET_METHOD(target, "reset",    reset);
     NODE_SET_METHOD(target, "velocity", velocity);
 }
 
