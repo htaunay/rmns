@@ -1,6 +1,5 @@
 var rmns = require("./rmns")
 var http = require("http");
-var binding = require("../build/Release/binding"); 
 
 // cb receives built obj
 var router = function(url, data, cb) {
@@ -8,7 +7,7 @@ var router = function(url, data, cb) {
     switch(url) {
 
         case "/stats":
-            cb(binding.stats());
+            cb(rmns.get_stats());
             break;
 
         case "/points":
@@ -21,25 +20,19 @@ var router = function(url, data, cb) {
         //    break;
 
         case "/spheres":
-            cb(binding.spheres(JSON.parse(data)));
-            console.log("Calling spheres endpoint");
+            cb(rmns.register_spheres(data));
             break;
 
         case "/reset":
-            cb(binding.reset());
-            //console.log("Calling reset endpoint");
+            cb(rmns.reset());
             break;
 
         case "/velocity":
-            cb(binding.velocity(JSON.parse(data)));
-            console.log("Calling velocity endpoint");
+            cb(rmns.calc_velocity(data));
             break;
 
         default:
-            cb({
-                "code": "404",
-                "msg":  "URL not found. Please check the docs @ TODO"
-            });
+            cb(rmns.NOT_FOUND());
             break;
     }
 }
@@ -60,8 +53,7 @@ var server = module.exports = http.createServer(function (request, response) {
 
             var json = { "msg": obj.msg };
             if("result" in obj) {
-                for(var key in obj.result)
-                    json[key] = obj.result[key];
+                json["result"] = obj.result;
             }
 
             response.end(JSON.stringify(json) + "\n");

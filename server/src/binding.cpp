@@ -32,18 +32,10 @@ void stats(const FunctionCallbackInfo<Value>& args) {
     int numPoints = speedCalculator->count_points();
     int numSpheres = speedCalculator->count_spheres();
 
-    std::stringstream stream;
-    stream << "RMNS server running with:\n"
-        << numPoints << " registered point(s)\n"
-        << numSpheres << " registered sphere(s)\n";
-
-    int code = 200;
-    std::string msg = stream.str();
-
-    output->Set(String::NewFromUtf8(isolate, "code"),
-            Number::New(isolate, code));
-    output->Set(String::NewFromUtf8(isolate, "msg"),
-            String::NewFromUtf8(isolate, msg.c_str()));
+    output->Set(String::NewFromUtf8(isolate, "num_points"),
+            Number::New(isolate, numPoints));
+    output->Set(String::NewFromUtf8(isolate, "num_spheres"),
+            Number::New(isolate, numSpheres));
 
     args.GetReturnValue().Set(output);
 }
@@ -79,8 +71,6 @@ void spheres(const FunctionCallbackInfo<Value>& args) {
 
     Isolate* isolate = args.GetIsolate();
 
-    int code;
-    std::string msg;
     Local<Object> output = Object::New(isolate);
 
     Local<String> xStr = String::NewFromUtf8(isolate, "x"); 
@@ -91,39 +81,23 @@ void spheres(const FunctionCallbackInfo<Value>& args) {
     Local<String> radiusStr = String::NewFromUtf8(isolate, "radius"); 
 
     int length = GetArrayLength(args);
-    if(length < 0)
+    Local<Object> array = args[0]->ToObject();
+
+    for(int i = 0; i < length; i++)
     {
-        code = 400;
-        msg = "Invalid argument type or size";
-    }
-    else
-    {
-        Local<Object> array = args[0]->ToObject();
+        Local<Object> sphereObj = array->Get(i)->ToObject();
+        Local<Object> center = sphereObj->Get(centerStr)->ToObject();
+        double x = center->Get(xStr)->NumberValue();
+        double y = center->Get(yStr)->NumberValue();
+        double z = center->Get(zStr)->NumberValue();
+        int id = (int) sphereObj->Get(idStr)->NumberValue();
+        double radius = sphereObj->Get(radiusStr)->NumberValue();
 
-        for(int i = 0; i < length; i++)
-        {
-            Local<Object> sphereObj = array->Get(i)->ToObject();
-            Local<Object> center = sphereObj->Get(centerStr)->ToObject();
-            double x = center->Get(xStr)->NumberValue();
-            double y = center->Get(yStr)->NumberValue();
-            double z = center->Get(zStr)->NumberValue();
-            int id = (int) sphereObj->Get(idStr)->NumberValue();
-            double radius = sphereObj->Get(radiusStr)->NumberValue();
-
-            speedCalculator->update_sphere(id, glm::vec3(x,y,z), radius);
-        }
-
-        code = 200;
-        std::stringstream stream;
-        stream << "Added " << length << " sphere(s) successfully. "
-            "The total now is " << speedCalculator->count_spheres() << " sphere(s)";
-        msg = stream.str();
+        speedCalculator->update_sphere(id, glm::vec3(x,y,z), radius);
     }
 
-    output->Set(String::NewFromUtf8(isolate, "code"),
-            Number::New(isolate, code));
-    output->Set(String::NewFromUtf8(isolate, "msg"),
-            String::NewFromUtf8(isolate, msg.c_str()));
+    output->Set(String::NewFromUtf8(isolate, "total"),
+        Number::New(isolate, speedCalculator->count_spheres()));
 
     args.GetReturnValue().Set(output);
 }
@@ -133,27 +107,10 @@ void reset(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = args.GetIsolate();
     Local<Object> output = Object::New(isolate);
 
-    int code;
-    std::string msg;
+    bool success = speedCalculator->reset();
 
-    if(speedCalculator->reset())
-    {
-        code = 200;
-        std::stringstream stream;
-        stream << "Reset operation successful. Spatial structure currently "
-            << "has " << speedCalculator->count_points() << " points";
-        msg = stream.str();
-    }
-    else
-    {
-        code = 500;
-        msg = "Internal server error - unable to reset spatial structure";
-    }
-
-    output->Set(String::NewFromUtf8(isolate, "code"),
-            Number::New(isolate, code));
-    output->Set(String::NewFromUtf8(isolate, "msg"),
-            String::NewFromUtf8(isolate, msg.c_str()));
+    output->Set(String::NewFromUtf8(isolate, "success"),
+            Boolean::New(isolate, success));
 
     args.GetReturnValue().Set(output);
 }
@@ -162,9 +119,6 @@ void velocity(const FunctionCallbackInfo<Value>& args) {
 
     Isolate* isolate = args.GetIsolate();
     Local<Object> output = Object::New(isolate);
-
-    int code;
-    std::string msg;
 
     Local<Object> posObj = args[0]->ToObject();
     double x = posObj->Get(String::NewFromUtf8(isolate, "x"))->NumberValue();
@@ -177,10 +131,8 @@ void velocity(const FunctionCallbackInfo<Value>& args) {
 
     if(speedCalculator->velocity(pos, nearest, speed))
     {
-        Local<Object> result = Object::New(isolate);
-
         // Set velocity
-        result->Set(String::NewFromUtf8(isolate, "velocity"),
+        output->Set(String::NewFromUtf8(isolate, "velocity"),
                Number::New(isolate, speed)); 
 
         // Set Nearest point
@@ -191,23 +143,8 @@ void velocity(const FunctionCallbackInfo<Value>& args) {
                Number::New(isolate, nearest.y));
         nearestObj->Set(String::NewFromUtf8(isolate, "z"),
                Number::New(isolate, nearest.z));
-        result->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
-
-        // Set outputs
-        output->Set(String::NewFromUtf8(isolate, "result"), result);
-        code = 200;
-        msg = "Velocity calculated with success";
+        output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
     }
-    else
-    {
-        code = 500;
-        msg = "Error while calculating optimal speed";
-    }
-
-    output->Set(String::NewFromUtf8(isolate, "code"),
-            Number::New(isolate, code));
-    output->Set(String::NewFromUtf8(isolate, "msg"),
-            String::NewFromUtf8(isolate, msg.c_str()));
 
     args.GetReturnValue().Set(output);
 }
