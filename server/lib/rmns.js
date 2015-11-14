@@ -1,4 +1,4 @@
-var binding = require("../build/Release/binding");
+var spatial = require("../build/Release/binding");
 
 var rmns = {};
 
@@ -93,7 +93,7 @@ rmns.NOT_FOUND = function() {
 
 rmns.get_stats = function() {
 
-    var result = binding.stats();
+    var result = spatial.stats();
     if(!("num_points" in result))
         return this.STATS_ERROR();
     if(!("num_spheres" in result))
@@ -123,7 +123,7 @@ rmns.register_points = function(data) {
             return this.POINTS_ERROR();
     }
 
-    var result = binding.points(points);
+    var result = spatial.points(points);
     if(!("total" in result) || !isNum(result.total) || result.total < 1)
         return this.POINTS_ERROR();
 
@@ -161,7 +161,7 @@ rmns.register_spheres = function(data) {
             return this.SPHERES_ERROR();
     }
 
-    var result = binding.spheres(spheres);
+    var result = spatial.spheres(spheres);
     if(!("total" in result) || !isNum(result.total) || result.total < 1)
         return this.SPHERES_ERROR();
 
@@ -170,7 +170,7 @@ rmns.register_spheres = function(data) {
 
 rmns.reset = function() {
 
-    var result = binding.reset();
+    var result = spatial.reset();
     if(!('success' in result) || !result.success)
         return this.RESET_ERROR();
 
@@ -195,7 +195,7 @@ rmns.calc_velocity = function(data) {
     if(!isNum(pos.x) || !isNum(pos.y) || !isNum(pos.z))
         return this.VELOCITY_ERROR();
 
-    var result = binding.velocity(pos);
+    var result = spatial.velocity(pos);
 
     if(!("velocity" in result) ||
         !isNum(result.velocity) ||

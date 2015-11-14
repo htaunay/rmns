@@ -78,7 +78,7 @@ var build_vec3 = function(x, y, z) {
 
 /* =================== TESTS ================== */
 
-describe("The server\'s", function () {
+describe("The API\'s", function () {
 
     before(function () {
         server.listen(8081);
@@ -285,7 +285,7 @@ describe("The server\'s", function () {
             test_post("velocity", rmns.VELOCITY_ERROR(), {}, done);
         });
 
-        it("should guarantee that all inout data is complete", function(done) {
+        it("should guarantee that all input data is complete", function(done) {
 
             var vec3 = build_vec3(1,2,3);
 

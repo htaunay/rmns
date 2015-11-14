@@ -3,7 +3,7 @@
 #include <iostream>
 #include <glm/vec3.hpp>
 #include <glm/gtx/norm.hpp>
-#include <rmns/SpeedCalculator.h>
+#include <rmns/SpatialStructure.h>
 #include <spatial/point_multiset.hpp>
 
 using namespace v8;
@@ -22,7 +22,7 @@ int GetArrayLength(const FunctionCallbackInfo<Value>& args)
     return length;
 }
 
-SpeedCalculator* speedCalculator = new SpeedCalculator();
+SpatialStructure* speedCalculator = new SpatialStructure();
 
 void stats(const FunctionCallbackInfo<Value>& args) {
 

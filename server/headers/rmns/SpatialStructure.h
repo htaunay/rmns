@@ -1,5 +1,5 @@
-#ifndef __SPEED_CALCULATOR__
-#define __SPEED_CALCULATOR__
+#ifndef __SPATIAL_STRUCTURE__
+#define __SPATIAL_STRUCTURE__
 
 #include <map>
 #include <glm/vec3.hpp>
@@ -8,10 +8,10 @@
 
 #include <rmns/Sphere.h>
 
-class SpeedCalculator
+class SpatialStructure
 {
     public:
-        SpeedCalculator();
+        SpatialStructure();
 
         bool reset();
         int count_points();
@@ -22,8 +22,8 @@ class SpeedCalculator
         bool update_sphere(int id, glm::vec3 center, double radius);
         bool velocity(glm::vec3 pos, glm::vec3& nearest, double& speed);
 
-    private:
         void nearest_point(glm::vec3 pos, glm::vec3& nearest, float& distance);
+        void nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, float& distance);
         void nearest_sphere(glm::vec3 pos, glm::vec3& nearest, float& distance);
 
     private:

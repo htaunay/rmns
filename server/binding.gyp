@@ -4,7 +4,7 @@
             "target_name": "binding",
             "sources": [
                 "src/binding.cpp",
-                "src/SpeedCalculator.cpp",
+                "src/SpatialStructure.cpp",
                 "src/Sphere.cpp"
             ],
             "include_dirs": [ "headers" ],

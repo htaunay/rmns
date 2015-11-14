@@ -1,42 +1,42 @@
-#include <rmns/SpeedCalculator.h>
+#include <rmns/SpatialStructure.h>
 #include <cfloat>
 #include <glm/geometric.hpp>
 
-SpeedCalculator::SpeedCalculator()
+SpatialStructure::SpatialStructure()
 {
     _spatialStructure = new Vec3Spatial();
 }
 
-bool SpeedCalculator::reset()
+bool SpatialStructure::reset()
 {
     _spheres.clear();
     _spatialStructure->clear();
     return true;
 }
 
-int SpeedCalculator::count_points()
+int SpatialStructure::count_points()
 {
     return _spatialStructure->count();
 }
 
-int SpeedCalculator::count_spheres()
+int SpatialStructure::count_spheres()
 {
     return _spheres.size();
 }
 
-bool SpeedCalculator::add_point(glm::vec3 point)
+bool SpatialStructure::add_point(glm::vec3 point)
 {
     _spatialStructure->insert(point);
     return true;
 }
 
-bool SpeedCalculator::add_points(std::vector<glm::vec3> points)
+bool SpatialStructure::add_points(std::vector<glm::vec3> points)
 {
     _spatialStructure->insert(points.begin(), points.end());
     return true;
 }
 
-bool SpeedCalculator::update_sphere(int id, glm::vec3 center, double radius)
+bool SpatialStructure::update_sphere(int id, glm::vec3 center, double radius)
 {
     if(_spheres.count(id) == 0)
     {
@@ -54,7 +54,7 @@ bool SpeedCalculator::update_sphere(int id, glm::vec3 center, double radius)
     return true;
 }
 
-bool SpeedCalculator::velocity(glm::vec3 pos, glm::vec3& nearest, double& speed)
+bool SpatialStructure::velocity(glm::vec3 pos, glm::vec3& nearest, double& speed)
 {
     glm::vec3 n_point, n_sphere;
     float d_point, d_sphere;
@@ -78,7 +78,7 @@ bool SpeedCalculator::velocity(glm::vec3 pos, glm::vec3& nearest, double& speed)
     return true;
 }
 
-void SpeedCalculator::nearest_point(glm::vec3 pos, glm::vec3& nearest, float& distance)
+void SpatialStructure::nearest_point(glm::vec3 pos, glm::vec3& nearest, float& distance)
 {
     Iterator iter = spatial::neighbor_begin(*_spatialStructure, pos);
     if(iter == _spatialStructure->end())
@@ -92,7 +92,21 @@ void SpeedCalculator::nearest_point(glm::vec3 pos, glm::vec3& nearest, float& di
     nearest = *iter;
 }
 
-void SpeedCalculator::nearest_sphere(glm::vec3 pos, glm::vec3& nearest, float& distance)
+void SpatialStructure::nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, float& distance)
+{
+    Iterator iter = spatial::neighbor_begin(*_spatialStructure, pos);
+    if(iter == _spatialStructure->end())
+    {
+        nearest = glm::vec3(0,0,0);
+        distance = 0;
+        return;
+    }
+
+    distance = iter.distance();
+    nearest = *iter;
+}
+
+void SpatialStructure::nearest_sphere(glm::vec3 pos, glm::vec3& nearest, float& distance)
 {
     Sphere* sphere = new Sphere(glm::vec3(0,0,0), 0);
     float minDistance = FLT_MAX;
