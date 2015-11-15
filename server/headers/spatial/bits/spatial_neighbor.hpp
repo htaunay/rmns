@@ -19,6 +19,12 @@
 #include "spatial_bidirectional.hpp"
 #include "spatial_except.hpp"
 
+#include "VisibilityHelper.h"
+
+#include <limits>
+#include <osg/Matrix>
+#include <co/Log.h>
+
 namespace spatial
 {
   namespace details
@@ -306,8 +312,8 @@ namespace spatial
   template<typename Ct, typename Metric>
   class neighbor_iterator<const Ct, Metric>
     : public details::Const_bidirectional_iterator
-      <typename container_traits<Ct>::mode_type,
-       typename container_traits<Ct>::rank_type>
+  <typename container_traits<Ct>::mode_type,
+   typename container_traits<Ct>::rank_type>
   {
   private:
     typedef typename details::Const_bidirectional_iterator
@@ -327,7 +333,7 @@ namespace spatial
     //! The key type that is used as a target for the nearest neighbor search
     typedef typename container_traits<Ct>::key_type key_type;
 
-    //! \empty
+    //! Uninitialized iterator.
     neighbor_iterator() { }
 
     /**
@@ -416,28 +422,28 @@ namespace spatial
 
     //! Increments the iterator and returns the incremented value. Prefer to
     //! use this form in \c for loops.
-    neighbor_iterator<const Ct, Metric>& operator++()
+    neighbor_iterator<Ct, Metric>& operator++()
     { return increment_neighbor(*this); }
 
     //! Increments the iterator but returns the value of the iterator before
     //! the increment. Prefer to use the other form in \c for loops.
-    neighbor_iterator<const Ct, Metric> operator++(int)
+    neighbor_iterator<Ct, Metric> operator++(int)
     {
-      neighbor_iterator<const Ct, Metric> x(*this);
+      neighbor_iterator<Ct, Metric> x(*this);
       increment_neighbor(*this);
       return x;
     }
 
     //! Decrements the iterator and returns the decremented value. Prefer to
     //! use this form in \c for loops.
-    neighbor_iterator<const Ct, Metric>& operator--()
+    neighbor_iterator<Ct, Metric>& operator--()
     { return decrement_neighbor(*this); }
 
     //! Decrements the iterator but returns the value of the iterator before
     //! the decrement. Prefer to use the other form in \c for loops.
-    neighbor_iterator<const Ct, Metric> operator--(int)
+    neighbor_iterator<Ct, Metric> operator--(int)
     {
-      neighbor_iterator<const Ct, Metric> x(*this);
+      neighbor_iterator<Ct, Metric> x(*this);
       decrement_neighbor(*this);
       return x;
     }
@@ -699,6 +705,17 @@ namespace spatial
   }
 
   template <typename Ct, typename Metric>
+  inline neighbor_iterator<Ct, Metric>
+  visible_neighbor_begin(Ct& container, const Metric& metric,
+  const typename container_traits<Ct>::key_type& target, const VisibilityHelper& helper )
+  {
+    if (container.empty()) return neighbor_end(container, metric, target);
+    neighbor_iterator<Ct, Metric>
+      it(container, metric, target, 0, container.end().node->parent);
+	return details::minimum_visible_neighbor(it, helper );
+  }
+
+  template <typename Ct, typename Metric>
   inline neighbor_iterator<const Ct, Metric>
   neighbor_begin(const Ct& container, const Metric& metric,
                  const typename container_traits<Ct>::key_type& target)
@@ -737,6 +754,20 @@ namespace spatial
                  typename details::with_builtin_difference<Ct>::type>
          (details::with_builtin_difference<Ct>()(container)),
        target);
+  }
+
+   template <typename Ct>
+  inline typename enable_if<details::is_compare_builtin<Ct>,
+                            neighbor_iterator<Ct> >::type
+  visible_neighbor_begin(Ct& container,
+                 const typename container_traits<Ct>::key_type& target, const VisibilityHelper& helper )
+  {
+    return visible_neighbor_begin
+      (container,
+       euclidian<Ct, double,
+                 typename details::with_builtin_difference<Ct>::type>
+         (details::with_builtin_difference<Ct>()(container)),
+       target, helper);
   }
 
   template <typename Ct>
@@ -913,7 +944,7 @@ namespace spatial
   neighbor_cupper_bound(const Ct& container, const Metric& metric,
                         const typename container_traits<Ct>::key_type& target,
                         typename Metric::distance_type bound)
-  { return neighbor_upper_bound(container, metric, target, bound); }
+  { return neighbor_upper_bound(container, metric, target); }
   ///@}
 
   /**
@@ -1453,6 +1484,135 @@ namespace spatial
                   tmp = met.distance_to_key(rank(), target_key(it),
                                             const_key(node));
                   if (tmp < near_distance)
+                    {
+                      near_node = node;
+                      near_dim = node_dim;
+                      near_distance = tmp;
+                    }
+                  else if (tmp == near_distance && node < near_node)
+                    {
+                      near_node = node;
+                      near_dim = node_dim;
+                    }
+                }
+            }
+          // No more nodes to visit, so go up!
+          else
+            {
+              node_ptr p = node->parent;
+              while (p != end && p->right == node)
+                {
+                  node = p;
+                  node_dim = decr_dim(rank, node_dim);
+                  p = node->parent;
+                }
+              node = p;
+              node_dim = decr_dim(rank, node_dim);
+            }
+        }
+      while(node != end);
+      SPATIAL_ASSERT_CHECK(near_dim < rank());
+      SPATIAL_ASSERT_CHECK(!header(near_node));
+      SPATIAL_ASSERT_CHECK(node != 0);
+      SPATIAL_ASSERT_CHECK(near_node != 0);
+      it.node = near_node; it.node_dim = near_dim;
+      it.distance() = near_distance;
+      return it;
+    }
+
+	// Find the minimum from node and stop when reaching the parent. Iterate
+    // in left-first fashion.
+    template <typename Container, typename Metric>
+    inline neighbor_iterator<Container, Metric>&
+    minimum_visible_neighbor(neighbor_iterator<Container, Metric>& it, const VisibilityHelper& helper )
+    {
+      typedef typename neighbor_iterator<Container, Metric>::node_ptr node_ptr;
+      typename container_traits<Container>::rank_type rank(it.rank());
+      typename container_traits<Container>::key_compare cmp(it.key_comp());
+      Metric met(it.metric());
+      SPATIAL_ASSERT_CHECK(it.node_dim < rank());
+      SPATIAL_ASSERT_CHECK(!header(it.node));
+      SPATIAL_ASSERT_CHECK(it.node != 0);
+      node_ptr node = it.node;
+      dimension_type node_dim = it.node_dim;
+      
+      node_ptr end = node->parent;
+      dimension_type near_dim = node_dim;
+
+      typename Metric::distance_type near_distance = met.distance_to_key(rank(), target_key(it), const_key(node));
+
+	  node_ptr near_node = end;
+	  near_distance = std::numeric_limits<double>::max();
+
+      typename Metric::distance_type tmp;
+      // Depth traversal starts with left first
+      while(node->left != 0
+		  && ( helper.planeRelatedToFrustum( const_key(node), node_dim ) == BELOW )
+		  && ( (!cmp(node_dim, const_key(node), target_key(it)) 
+				|| near_distance
+                >= met.distance_to_plane(rank(), node_dim, target_key(it),
+                                         const_key(node)))
+			//&& plane_visible( matrix, const_key( node ), node_dim, reference, cellSize ) 
+			))
+        {
+          node = node->left;
+          node_dim = incr_dim(rank, node_dim);
+          tmp = met.distance_to_key(rank(), target_key(it), const_key(node));
+		  if (tmp < near_distance && helper.visible( const_key(node) ) )
+            {
+              near_node = node;
+              near_dim = node_dim;
+              near_distance = tmp;
+            }
+          else if (tmp == near_distance
+                   // to provide total ordering among the nodes, we use the node
+                   // pointer as a fall back comparison mechanism
+                   && node < near_node)
+            {
+              near_node = node;
+              near_dim = node_dim;
+            }
+        }
+      // In-order, right, left, then all the way up
+      do
+        {
+          if (node->right != 0
+			  && ( helper.planeRelatedToFrustum( const_key(node), node_dim ) != ABOVE )
+              && ( !cmp(node_dim, target_key(it), const_key(node))
+                  || near_distance
+                  >= met.distance_to_plane(rank(), node_dim, target_key(it),
+                                           const_key(node)) )
+				)
+            {
+              node = node->right;
+              node_dim = incr_dim(rank, node_dim);
+              
+			  tmp = met.distance_to_key(rank(), target_key(it),
+                                        const_key(node));
+
+			  if (tmp < near_distance && helper.visible( const_key(node) ) )
+                {
+                  near_node = node;
+                  near_dim = node_dim;
+                  near_distance = tmp;
+                }
+              else if (tmp == near_distance && node < near_node)
+                {
+                  near_node = node;
+                  near_dim = node_dim;
+                }
+              while(node->left != 0
+				    && ( helper.planeRelatedToFrustum( const_key(node), node_dim ) == BELOW )
+                    && ( !cmp(node_dim, const_key(node), target_key(it)) 
+						|| near_distance
+                        >= met.distance_to_plane(rank(), node_dim, target_key(it), const_key(node) ) )
+					)
+                {
+                  node = node->left;
+                  node_dim = incr_dim(rank, node_dim);
+                  tmp = met.distance_to_key(rank(), target_key(it),
+                                            const_key(node));
+                  if (tmp < near_distance && helper.visible( const_key(node) ))
                     {
                       near_node = node;
                       near_dim = node_dim;

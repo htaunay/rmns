@@ -17,6 +17,9 @@
 #ifndef SPATIAL_CHECK_CONCEPT_HPP
 #define SPATIAL_CHECK_CONCEPT_HPP
 
+// is_integer, is_floating_point, is_arithmetic, etc...
+#include "spatial_pull_tr1.hpp"
+
 namespace spatial
 {
   /**

@@ -46,7 +46,7 @@ namespace spatial
     point_multimap() { }
 
     explicit point_multimap(const Compare& compare)
-      : base_type(details::Static_rank<Rank>(), compare)
+      : base_type(details::Static_rank<Rank>())
     { }
 
     point_multimap(const Compare& compare, const BalancingPolicy& balancing)

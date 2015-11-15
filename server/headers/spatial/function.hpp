@@ -29,7 +29,7 @@ namespace spatial
   struct accessor_minus
     : private Accessor // empty member optimization
   {
-    accessor_minus(Accessor accessor_ = Accessor())
+    accessor_minus(const Accessor& accessor_ = Accessor())
       : Accessor(accessor_)
     { }
 
@@ -105,13 +105,7 @@ namespace spatial
     {
       typename Tp::const_iterator ix = x.begin();
       typename Tp::const_iterator iy = y.begin();
-      {
-        using namespace std;
-        typedef typename std::iterator_traits<typename Tp::const_iterator>
-          ::difference_type diff_t;
-        advance(ix, static_cast<diff_t>(n));
-        advance(iy, static_cast<diff_t>(n));
-      }
+      { using namespace ::std; advance(ix, n); advance(iy, n); }
       return *ix - *iy;
     }
   };
@@ -133,7 +127,7 @@ namespace spatial
   struct accessor_less
     : private Accessor // empty member optimization
   {
-    accessor_less(Accessor access = Accessor())
+    accessor_less(const Accessor& access = Accessor())
       : Accessor(access)
     { }
 
@@ -211,13 +205,7 @@ namespace spatial
     {
       typename Tp::const_iterator ix = x.begin();
       typename Tp::const_iterator iy = y.begin();
-      {
-        using namespace std;
-        typedef typename std::iterator_traits<typename Tp::const_iterator>
-          ::difference_type diff_t;
-        advance(ix, static_cast<diff_t>(n));
-        advance(iy, static_cast<diff_t>(n));
-      }
+      { using namespace ::std; advance(ix, n); advance(iy, n); }
       return (*ix < *iy);
     }
 
@@ -226,13 +214,7 @@ namespace spatial
     {
       typename Tp::const_iterator ix = x.begin();
       typename Tp::const_iterator iy = y.begin();
-      {
-        using namespace std;
-        typedef typename std::iterator_traits<typename Tp::const_iterator>
-          ::difference_type diff_t;
-        advance(ix, static_cast<diff_t>(a));
-        advance(iy, static_cast<diff_t>(b));
-      }
+      { using namespace ::std; advance(ix, a); advance(iy, b); }
       return (*ix < *iy);
     }
   };
