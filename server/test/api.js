@@ -3,6 +3,7 @@ require("should-http");
 
 var server  = require("../lib/index.js");
 var rmns = require("../lib/rmns.js");
+var tools = require("./tools.js")
 var request = require("request");
 
 /* ================ HELPER METHODS =============== */
@@ -54,31 +55,9 @@ var test_post = function(endpoint, expected_res, post_data, done) {
     });
 };
 
-var build_sphere = function(id, radius, x, y, z) {
-
-    return {
-        "id": id,
-        "radius": radius,
-        "center": {
-            "x": x,
-            "y": y,
-            "z": z
-        }
-    };
-}
-
-var build_vec3 = function(x, y, z) {
-
-    return {
-        "x": x,
-        "y": y,
-        "z": z
-    };
-}
-
 /* =================== TESTS ================== */
 
-describe("The API\'s", function () {
+describe("The server\'s", function () {
 
     before(function () {
         server.listen(8081);
@@ -163,9 +142,9 @@ describe("The API\'s", function () {
         it("should guarantee that all sphere data is complete", function(done) {
 
             var spheres = [
-                build_sphere(123,5,1,2,3),
-                build_sphere(345,10,4,5,6),
-                build_sphere(222,1,8,9,1)
+                tools.build_sphere(123,5,1,2,3),
+                tools.build_sphere(345,10,4,5,6),
+                tools.build_sphere(222,1,8,9,1)
             ];
 
             delete spheres[1]["radius"];
@@ -175,9 +154,9 @@ describe("The API\'s", function () {
         it("should guarantee that all sphere data is correct", function(done) {
 
             var spheres = [
-                build_sphere(123,5,1,2,3),
-                build_sphere(345,10,4,5,6),
-                build_sphere(222,1,null,9,1)
+                tools.build_sphere(123,5,1,2,3),
+                tools.build_sphere(345,10,4,5,6),
+                tools.build_sphere(222,1,null,9,1)
             ];
 
             test_post("spheres", rmns.SPHERES_ERROR(), spheres, done);
@@ -186,9 +165,9 @@ describe("The API\'s", function () {
         it("should register spheres correctly", function(done) {
 
             var spheres = [
-                build_sphere(123,5,1,2,3),
-                build_sphere(345,10,4,5,6),
-                build_sphere(222,1,7,9,1)
+                tools.build_sphere(123,5,1,2,3),
+                tools.build_sphere(345,10,4,5,6),
+                tools.build_sphere(222,1,7,9,1)
             ];
 
             test_post("spheres", rmns.SPHERES_OK(3,3), spheres, done);
@@ -197,9 +176,9 @@ describe("The API\'s", function () {
         it("should acumulate spheres correctly", function(done) {
 
             var spheres = [
-                build_sphere(123,5,1,2,3),
-                build_sphere(345,10,4,5,6),
-                build_sphere(222,1,7,9,1)
+                tools.build_sphere(123,5,1,2,3),
+                tools.build_sphere(345,10,4,5,6),
+                tools.build_sphere(222,1,7,9,1)
             ];
 
             test_get("reset", rmns.RESET_OK(), function() {
@@ -223,9 +202,9 @@ describe("The API\'s", function () {
         it("should refresh spheres correctly", function(done) {
 
             var spheres = [
-                build_sphere(123,5,1,2,3),
-                build_sphere(345,10,4,5,6),
-                build_sphere(222,1,7,9,1)
+                tools.build_sphere(123,5,1,2,3),
+                tools.build_sphere(345,10,4,5,6),
+                tools.build_sphere(222,1,7,9,1)
             ];
 
             test_get("reset", rmns.RESET_OK(), function() {
@@ -243,9 +222,9 @@ describe("The API\'s", function () {
         it("should update spheres correctly", function(done) {
 
             var spheres = [
-                build_sphere(123,5,1,2,3),
-                build_sphere(345,10,4,5,6),
-                build_sphere(222,1,7,9,1)
+                tools.build_sphere(123,5,1,2,3),
+                tools.build_sphere(345,10,4,5,6),
+                tools.build_sphere(222,1,7,9,1)
             ];
 
             test_get("reset", rmns.RESET_OK(), function() {
@@ -287,7 +266,7 @@ describe("The API\'s", function () {
 
         it("should guarantee that all input data is complete", function(done) {
 
-            var vec3 = build_vec3(1,2,3);
+            var vec3 = tools.build_vec3(1,2,3);
 
             delete vec3["y"];
             test_post("velocity", rmns.VELOCITY_ERROR(), vec3, done);
@@ -295,7 +274,7 @@ describe("The API\'s", function () {
 
         it("should guarantee that all input data is correct", function(done) {
 
-            var vec3 = build_vec3(1,2,"3");
+            var vec3 = tools.build_vec3(1,2,"3");
 
             test_post("velocity", rmns.VELOCITY_ERROR(), vec3, done);
         });
@@ -303,8 +282,8 @@ describe("The API\'s", function () {
         it("should calculate the velocity correctly", function(done) {
 
             var points = [10,10,10,5,5,5,0,0,0];
-            var pos = build_vec3(-3,-4,0);
-            var nearest = build_vec3(0,0,0);
+            var pos = tools.build_vec3(-3,-4,0);
+            var nearest = tools.build_vec3(0,0,0);
 
             test_post("points", rmns.POINTS_OK(3,3), points, function() {
 
