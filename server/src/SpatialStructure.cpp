@@ -65,7 +65,7 @@ void SpatialStructure::nearest_point(glm::vec3 pos, glm::vec3& nearest, double& 
     if(iter == _spatialStructure->end())
     {
         nearest = glm::vec3(0,0,0);
-        distance = 0;
+        distance = 1e100;
         return;
     }
 
@@ -75,7 +75,7 @@ void SpatialStructure::nearest_point(glm::vec3 pos, glm::vec3& nearest, double& 
 
 void SpatialStructure::nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, double& distance)
 {
-    //_helper.setFrustrum;
+    _helper.set(glm::vec3(-1000,-1000,0), glm::vec3(1000,1000,1000));
 
     Iterator iter =
     spatial::visible_neighbor_begin(*_spatialStructure, pos, _helper);
@@ -83,7 +83,8 @@ void SpatialStructure::nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, double&
     if(iter == _spatialStructure->end())
     {
         nearest = glm::vec3(0,0,0);
-        distance = 0;
+        // TODO
+        distance = 10000;
         return;
     }
 

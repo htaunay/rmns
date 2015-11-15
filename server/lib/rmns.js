@@ -220,9 +220,13 @@ rmns.calc_velocity = function(data) {
     if(!isNum(pos.x) || !isNum(pos.y) || !isNum(pos.z))
         return this.VELOCITY_ERROR();
 
-    var point_result = spatial.nearest_point(pos);
+    var point_result = spatial.nearest_vpoint(pos);
     if(!is_nearest_result_valid(point_result))
         return this.VELOCITY_ERROR();
+
+    //var visible_result = spatial.nearest_vpoint(pos);
+    //if(!is_nearest_result_valid(visible_result))
+    //    return this.VELOCITY_ERROR();
 
     var obj_result = spatial.nearest_object(pos);
     if(!is_nearest_result_valid(obj_result))
@@ -232,6 +236,14 @@ rmns.calc_velocity = function(data) {
         return this.VELOCITY_OK(point_result.distance, point_result.nearest);
     else
         return this.VELOCITY_OK(obj_result.distance, obj_result.nearest);
+
+    //if(point_result.distance < obj_result.distance &&
+    //   point_result.distance < visible_result.distance)
+    //    return this.VELOCITY_OK(point_result.distance, point_result.nearest);
+    //else if(visible_result.distance < obj_result.distance)
+    //    return this.VELOCITY_OK(visible_result.distance, visible_result.nearest);
+    //else
+    //    return this.VELOCITY_OK(obj_result.distance, obj_result.nearest);
 };
 
 module.exports = rmns;

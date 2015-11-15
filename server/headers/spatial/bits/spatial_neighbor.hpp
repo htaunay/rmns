@@ -21,6 +21,7 @@
 
 #include <rmns/VisibilityHelper.h>
 
+#include <iostream>
 #include <limits>
 #include <glm/mat4x4.hpp>
 
@@ -1429,6 +1430,8 @@ namespace spatial
         = met.distance_to_key(rank(), target_key(it), const_key(node));
       typename Metric::distance_type tmp;
       // Depth traversal starts with left first
+      //std::cout << "[" << node_dim << "]P ROOT NODE = " << const_key(node)[0] << ", " << 
+      //    const_key(node)[1] << ", " << const_key(node)[2] << "\n";
       while(node->left != 0
             && (!cmp(node_dim, const_key(node), target_key(it))
                 || near_distance
@@ -1436,6 +1439,8 @@ namespace spatial
                                          const_key(node))))
         {
           node = node->left;
+          //std::cout << "[" << node_dim << "]P LEFT NODE = " << const_key(node)[0] << ", " << 
+          //    const_key(node)[1] << ", " << const_key(node)[2] << "\n";
           node_dim = incr_dim(rank, node_dim);
           tmp = met.distance_to_key(rank(), target_key(it), const_key(node));
           if (tmp < near_distance)
@@ -1463,6 +1468,8 @@ namespace spatial
                                            const_key(node))))
             {
               node = node->right;
+              //std::cout << "[" << node_dim << "]P RIGHT NODE = " << const_key(node)[0] << 
+              //    ", " << const_key(node)[1] << ", " << const_key(node)[2] << "\n";
               node_dim = incr_dim(rank, node_dim);
               tmp = met.distance_to_key(rank(), target_key(it),
                                         const_key(node));
@@ -1485,6 +1492,8 @@ namespace spatial
                                                  const_key(node))))
                 {
                   node = node->left;
+                  //std::cout << "[" << node_dim << "]P LEFT NODE = " << const_key(node)[0] << ", " << 
+                  //    const_key(node)[1] << ", " << const_key(node)[2] << "\n";
                   node_dim = incr_dim(rank, node_dim);
                   tmp = met.distance_to_key(rank(), target_key(it),
                                             const_key(node));
@@ -1505,11 +1514,15 @@ namespace spatial
           else
             {
               node_ptr p = node->parent;
+              //std::cout << "[" << node_dim << "]P PARENT NODE = " << const_key(p)[0] << ", "
+              //    << const_key(p)[1] << ", " << const_key(p)[2] << "\n";
               while (p != end && p->right == node)
                 {
                   node = p;
                   node_dim = decr_dim(rank, node_dim);
                   p = node->parent;
+                  //std::cout << "[" << node_dim << "]P PARENT NODE = " << const_key(p)[0] << 
+                  //    ", " << const_key(p)[1] << ", " << const_key(p)[2] << "\n";
                 }
               node = p;
               node_dim = decr_dim(rank, node_dim);
@@ -1531,39 +1544,45 @@ namespace spatial
     inline neighbor_iterator<Container, Metric>&
     minimum_visible_neighbor(neighbor_iterator<Container, Metric>& it, const VisibilityHelper& helper )
     {
-      typedef typename neighbor_iterator<Container, Metric>::node_ptr node_ptr;
-      typename container_traits<Container>::rank_type rank(it.rank());
-      typename container_traits<Container>::key_compare cmp(it.key_comp());
-      Metric met(it.metric());
-      SPATIAL_ASSERT_CHECK(it.node_dim < rank());
-      SPATIAL_ASSERT_CHECK(!header(it.node));
-      SPATIAL_ASSERT_CHECK(it.node != 0);
-      node_ptr node = it.node;
-      dimension_type node_dim = it.node_dim;
-      
-      node_ptr end = node->parent;
-      dimension_type near_dim = node_dim;
+        typedef typename neighbor_iterator<Container, Metric>::node_ptr node_ptr;
+        typename container_traits<Container>::rank_type rank(it.rank());
+        typename container_traits<Container>::key_compare cmp(it.key_comp());
+        Metric met(it.metric());
+        SPATIAL_ASSERT_CHECK(it.node_dim < rank());
+        SPATIAL_ASSERT_CHECK(!header(it.node));
+        SPATIAL_ASSERT_CHECK(it.node != 0);
+        node_ptr node = it.node;
+        dimension_type node_dim = it.node_dim;
 
-      typename Metric::distance_type near_distance = met.distance_to_key(rank(), target_key(it), const_key(node));
+        node_ptr end = node->parent;
+        dimension_type near_dim = node_dim;
 
-	  node_ptr near_node = end;
-	  near_distance = std::numeric_limits<double>::max();
+        typename Metric::distance_type near_distance = met.distance_to_key(rank(), target_key(it), const_key(node));
 
-      typename Metric::distance_type tmp;
-      // Depth traversal starts with left first
-      while(node->left != 0
-		  && ( helper.planeRelatedToFrustum( const_key(node), node_dim ) == BELOW )
-		  && ( (!cmp(node_dim, const_key(node), target_key(it)) 
-				|| near_distance
-                >= met.distance_to_plane(rank(), node_dim, target_key(it),
-                                         const_key(node)))
-			//&& plane_visible( matrix, const_key( node ), node_dim, reference, cellSize ) 
-			))
+        node_ptr near_node = end;
+        near_distance = std::numeric_limits<double>::max();
+        //std::cout << "[" << node_dim << "]V ROOT NODE = " << const_key(node)[0] << ", " << 
+        //  const_key(node)[1] << ", " << const_key(node)[2] << "\n";
+
+        typename Metric::distance_type tmp;
+        // Depth traversal starts with left first
+        while(
+            node->left != 0 &&
+            helper.planeRelatedToFrustum( const_key(node), node_dim ) != ABOVE &&
+            (
+                !cmp(node_dim, const_key(node), target_key(it)) ||
+                near_distance >= met.distance_to_plane(
+                    rank(), node_dim, target_key(it), const_key(node)
+                )
+            )
+        )
         {
           node = node->left;
+          //std::cout << "[" << node_dim << "]V LEFT NODE = " << const_key(node)[0] << ", " << 
+          //    const_key(node)[1] << ", " << const_key(node)[2] << "\n";
           node_dim = incr_dim(rank, node_dim);
           tmp = met.distance_to_key(rank(), target_key(it), const_key(node));
-		  if (tmp < near_distance && helper.visible( const_key(node) ) )
+          if (tmp < near_distance && helper.visible( const_key(node) ) )
             {
               near_node = node;
               near_dim = node_dim;
@@ -1582,7 +1601,7 @@ namespace spatial
       do
         {
           if (node->right != 0
-			  && ( helper.planeRelatedToFrustum( const_key(node), node_dim ) != ABOVE )
+			  && ( helper.planeRelatedToFrustum( const_key(node), node_dim ) != BELOW )
               && ( !cmp(node_dim, target_key(it), const_key(node))
                   || near_distance
                   >= met.distance_to_plane(rank(), node_dim, target_key(it),
@@ -1590,6 +1609,8 @@ namespace spatial
 				)
             {
               node = node->right;
+              //std::cout << "[" << node_dim << "]V RIGHT NODE = " << const_key(node)[0] << 
+              //    ", " << const_key(node)[1] << ", " << const_key(node)[2] << "\n";
               node_dim = incr_dim(rank, node_dim);
               
 			  tmp = met.distance_to_key(rank(), target_key(it),
@@ -1607,13 +1628,15 @@ namespace spatial
                   near_dim = node_dim;
                 }
               while(node->left != 0
-				    && ( helper.planeRelatedToFrustum( const_key(node), node_dim ) == BELOW )
+				    && ( helper.planeRelatedToFrustum( const_key(node), node_dim ) != ABOVE )
                     && ( !cmp(node_dim, const_key(node), target_key(it)) 
 						|| near_distance
                         >= met.distance_to_plane(rank(), node_dim, target_key(it), const_key(node) ) )
 					)
                 {
                   node = node->left;
+                  //std::cout << "[" << node_dim << "]V LEFT NODE = " << const_key(node)[0]
+                  //    << ", " << const_key(node)[1] << ", " << const_key(node)[2] << "\n";
                   node_dim = incr_dim(rank, node_dim);
                   tmp = met.distance_to_key(rank(), target_key(it),
                                             const_key(node));
@@ -1634,9 +1657,13 @@ namespace spatial
           else
             {
               node_ptr p = node->parent;
+              //std::cout << "[" << node_dim << "]V PARENT NODE = " << const_key(p)[0] << ", "
+              //    << const_key(p)[1] << ", " << const_key(p)[2] << "\n";
               while (p != end && p->right == node)
                 {
                   node = p;
+                  //std::cout << "[" << node_dim << "]V PARENT NODE = " << const_key(p)[0]
+                  //    << ", " << const_key(p)[1] << ", " << const_key(p)[2] << "\n";
                   node_dim = decr_dim(rank, node_dim);
                   p = node->parent;
                 }
