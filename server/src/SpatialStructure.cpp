@@ -1,9 +1,12 @@
 #include <rmns/SpatialStructure.h>
+#include <spatial/neighbor_iterator.hpp>
+#include <spatial/region_iterator.hpp>
 #include <cfloat>
 #include <glm/geometric.hpp>
 
 SpatialStructure::SpatialStructure()
 {
+    //_helper = new VisibilityHelper();
     _spatialStructure = new Vec3Spatial();
 }
 
@@ -54,33 +57,11 @@ bool SpatialStructure::update_sphere(int id, glm::vec3 center, double radius)
     return true;
 }
 
-bool SpatialStructure::velocity(glm::vec3 pos, glm::vec3& nearest, double& speed)
+void SpatialStructure::nearest_point(glm::vec3 pos, glm::vec3& nearest, double& distance)
 {
-    glm::vec3 n_point, n_sphere;
-    float d_point, d_sphere;
+    Iterator iter =
+    spatial::neighbor_begin(*_spatialStructure, pos);
 
-    nearest_point(pos, n_point, d_point);
-    nearest_sphere(pos, n_sphere, d_sphere);
-
-    if(d_point != 0 && d_point < d_sphere)
-    {
-        nearest = n_point;
-        speed = d_point;
-    }
-    else
-    {
-        nearest = n_sphere;
-        speed = d_sphere;
-    }
-
-    // TODO check for return false
-
-    return true;
-}
-
-void SpatialStructure::nearest_point(glm::vec3 pos, glm::vec3& nearest, float& distance)
-{
-    Iterator iter = spatial::neighbor_begin(*_spatialStructure, pos);
     if(iter == _spatialStructure->end())
     {
         nearest = glm::vec3(0,0,0);
@@ -92,9 +73,13 @@ void SpatialStructure::nearest_point(glm::vec3 pos, glm::vec3& nearest, float& d
     nearest = *iter;
 }
 
-void SpatialStructure::nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, float& distance)
+void SpatialStructure::nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, double& distance)
 {
-    Iterator iter = spatial::neighbor_begin(*_spatialStructure, pos);
+    //_helper.setFrustrum;
+
+    Iterator iter =
+    spatial::visible_neighbor_begin(*_spatialStructure, pos, _helper);
+
     if(iter == _spatialStructure->end())
     {
         nearest = glm::vec3(0,0,0);
@@ -106,7 +91,12 @@ void SpatialStructure::nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, float& 
     nearest = *iter;
 }
 
-void SpatialStructure::nearest_sphere(glm::vec3 pos, glm::vec3& nearest, float& distance)
+void SpatialStructure::nearest_object(glm::vec3 pos, glm::vec3& nearest, double& distance)
+{
+    return nearest_sphere(pos, nearest, distance);
+}
+
+void SpatialStructure::nearest_sphere(glm::vec3 pos, glm::vec3& nearest, double& distance)
 {
     Sphere* sphere = new Sphere(glm::vec3(0,0,0), 0);
     float minDistance = FLT_MAX;

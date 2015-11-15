@@ -19,11 +19,10 @@
 #include "spatial_bidirectional.hpp"
 #include "spatial_except.hpp"
 
-#include "VisibilityHelper.h"
+#include <rmns/VisibilityHelper.h>
 
 #include <limits>
-#include <osg/Matrix>
-#include <co/Log.h>
+#include <glm/mat4x4.hpp>
 
 namespace spatial
 {
@@ -586,6 +585,11 @@ namespace spatial
     minimum_neighbor(neighbor_iterator<Container, Metric>& iter);
 
     template <typename Container, typename Metric>
+    inline neighbor_iterator<Container, Metric>&
+    minimum_visible_neighbor(neighbor_iterator<Container, Metric>& it,
+                             const VisibilityHelper& helper);
+
+    template <typename Container, typename Metric>
     neighbor_iterator<Container, Metric>&
     maximum_neighbor(neighbor_iterator<Container, Metric>& iter);
 
@@ -760,7 +764,8 @@ namespace spatial
   inline typename enable_if<details::is_compare_builtin<Ct>,
                             neighbor_iterator<Ct> >::type
   visible_neighbor_begin(Ct& container,
-                 const typename container_traits<Ct>::key_type& target, const VisibilityHelper& helper )
+                         const typename container_traits<Ct>::key_type& target,
+                         const VisibilityHelper& helper )
   {
     return visible_neighbor_begin
       (container,

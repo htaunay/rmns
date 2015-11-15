@@ -2,9 +2,32 @@ var spatial = require("../build/Release/binding");
 
 var rmns = {};
 
+/* ================ HELPER METHODS =============== */
+
 var isNum = function(num) {
     return typeof num === "number";
-}
+};
+
+var is_nearest_result_valid = function(result) {
+
+    if(!("distance" in result) ||
+        !isNum(result.distance) ||
+        result.distance < 0)
+        return false; 
+
+    if(!("nearest" in result) ||
+        !("x" in result.nearest) ||
+        !("y" in result.nearest) ||
+        !("z" in result.nearest))
+        return false; 
+
+    if(!isNum(result.nearest.x) ||
+        !isNum(result.nearest.y) ||
+        !isNum(result.nearest.z))
+        return false; 
+
+    return true;
+};
 
 /* ================ SERVER MESSAGES =============== */
 
@@ -177,6 +200,8 @@ rmns.reset = function() {
     return this.RESET_OK();
 };
 
+// TODO specific endpoints (e.g. nearest object)
+
 rmns.calc_velocity = function(data) {
 
     var pos;
@@ -195,25 +220,18 @@ rmns.calc_velocity = function(data) {
     if(!isNum(pos.x) || !isNum(pos.y) || !isNum(pos.z))
         return this.VELOCITY_ERROR();
 
-    var result = spatial.velocity(pos);
-
-    if(!("velocity" in result) ||
-        !isNum(result.velocity) ||
-        result.velocity < 0)
+    var point_result = spatial.nearest_point(pos);
+    if(!is_nearest_result_valid(point_result))
         return this.VELOCITY_ERROR();
 
-    if(!("nearest" in result) ||
-        !("x" in result.nearest) ||
-        !("y" in result.nearest) ||
-        !("z" in result.nearest))
+    var obj_result = spatial.nearest_object(pos);
+    if(!is_nearest_result_valid(obj_result))
         return this.VELOCITY_ERROR();
 
-    if(!isNum(result.nearest.x) ||
-        !isNum(result.nearest.y) ||
-        !isNum(result.nearest.z))
-        return this.VELOCITY_ERROR();
-
-    return this.VELOCITY_OK(result.velocity, result.nearest);
+    if(point_result.distance < obj_result.distance)
+        return this.VELOCITY_OK(point_result.distance, point_result.nearest);
+    else
+        return this.VELOCITY_OK(obj_result.distance, obj_result.nearest);
 };
 
 module.exports = rmns;

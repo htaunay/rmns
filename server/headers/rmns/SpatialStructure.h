@@ -7,6 +7,7 @@
 #include <spatial/neighbor_iterator.hpp>
 
 #include <rmns/Sphere.h>
+#include <rmns/VisibilityHelper.h>
 
 class SpatialStructure
 {
@@ -20,11 +21,13 @@ class SpatialStructure
         bool add_point(glm::vec3 point);
         bool add_points(std::vector<glm::vec3> points);
         bool update_sphere(int id, glm::vec3 center, double radius);
-        bool velocity(glm::vec3 pos, glm::vec3& nearest, double& speed);
 
-        void nearest_point(glm::vec3 pos, glm::vec3& nearest, float& distance);
-        void nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, float& distance);
-        void nearest_sphere(glm::vec3 pos, glm::vec3& nearest, float& distance);
+        void nearest_point(glm::vec3 pos, glm::vec3& nearest, double& distance);
+        void nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, double& distance);
+        void nearest_object(glm::vec3 pos, glm::vec3& nearest, double& distance);
+
+    private:
+        void nearest_sphere(glm::vec3 pos, glm::vec3& nearest, double& distance);
 
     private:
         typedef spatial::point_multiset<3, glm::vec3> Vec3Spatial;
@@ -33,6 +36,8 @@ class SpatialStructure
 
         typedef std::map<int,Sphere*>::iterator sphere_it;
         std::map<int,Sphere*> _spheres;
+
+        VisibilityHelper _helper;
 };
 
 #endif
