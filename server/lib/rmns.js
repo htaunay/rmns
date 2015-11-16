@@ -205,8 +205,14 @@ rmns.reset = function() {
 rmns.calc_velocity = function(data) {
 
     var pos;
+    var mv;
+    var proj;
+
     try {
-        pos = JSON.parse(data);
+        data = JSON.parse(data);
+        pos = data.pos;
+        mv = data.mv;
+        proj = data.proj;
     }
     catch(e) {
         return this.VELOCITY_ERROR();
@@ -220,7 +226,25 @@ rmns.calc_velocity = function(data) {
     if(!isNum(pos.x) || !isNum(pos.y) || !isNum(pos.z))
         return this.VELOCITY_ERROR();
 
-    var point_result = spatial.nearest_vpoint(pos);
+    if(!Array.isArray(mv))
+        return this.VELOCITY_ERROR();
+
+    if(mv.length != 16)
+        return this.VELOCITY_ERROR();
+    for(var i = 0; i < 16; i++)
+        if(!isNum(mv[i]))
+            return this.VELOCITY_ERROR();
+
+    if(!Array.isArray(proj))
+        return this.VELOCITY_ERROR();
+
+    if(proj.length != 16)
+        return this.VELOCITY_ERROR();
+    for(var i = 0; i < 16; i++)
+        if(!isNum(proj[i]))
+            return this.VELOCITY_ERROR();
+
+    var point_result = spatial.nearest_vpoint(pos, mv, proj);
     if(!is_nearest_result_valid(point_result))
         return this.VELOCITY_ERROR();
 

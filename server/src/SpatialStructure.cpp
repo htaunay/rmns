@@ -73,9 +73,22 @@ void SpatialStructure::nearest_point(glm::vec3 pos, glm::vec3& nearest, double& 
     nearest = *iter;
 }
 
-void SpatialStructure::nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, double& distance)
+void SpatialStructure::nearest_vpoint(glm::vec3 pos, std::vector<double> mvArray,
+    std::vector<double> projArray, glm::vec3& nearest, double& distance)
 {
-    _helper.set(glm::vec3(-1000,-1000,0), glm::vec3(1000,1000,1000));
+    glm::mat4 mv;
+    glm::mat4 proj;
+
+    for(int i = 0; i < 4; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            mv[j][i]    = mvArray[j + (i*4)];
+            proj[j][i]  = projArray[j + (i*4)];
+        }
+    }
+
+    _helper.setMatrices(mv, proj);
 
     Iterator iter =
     spatial::visible_neighbor_begin(*_spatialStructure, pos, _helper);

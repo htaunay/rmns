@@ -45,7 +45,10 @@ describe("The SpatialStructure class", function () {
             ]);
             r.total.should.be.eql(9);
 
-            r = spatial.nearest_vpoint(tools.build_vec3(8,3,5));
+            var mv = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+            var proj = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+
+            r = spatial.nearest_vpoint(tools.build_vec3(8,3,5), mv, proj);
             r.distance.should.be.eql(5);
             r.nearest.should.be.eql(tools.build_vec3(0,0,0));
         });

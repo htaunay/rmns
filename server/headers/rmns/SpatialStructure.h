@@ -2,6 +2,7 @@
 #define __SPATIAL_STRUCTURE__
 
 #include <map>
+#include <vector>
 #include <glm/vec3.hpp>
 #include <spatial/point_multiset.hpp>
 #include <spatial/neighbor_iterator.hpp>
@@ -23,7 +24,8 @@ class SpatialStructure
         bool update_sphere(int id, glm::vec3 center, double radius);
 
         void nearest_point(glm::vec3 pos, glm::vec3& nearest, double& distance);
-        void nearest_vpoint(glm::vec3 pos, glm::vec3& nearest, double& distance);
+        void nearest_vpoint(glm::vec3 pos, std::vector<double> mvArray,
+            std::vector<double> projArray, glm::vec3& nearest, double& distance);
         void nearest_object(glm::vec3 pos, glm::vec3& nearest, double& distance);
 
     private:

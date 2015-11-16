@@ -156,10 +156,20 @@ void nearest_vpoint(const FunctionCallbackInfo<Value>& args) {
     double y = posObj->Get(String::NewFromUtf8(isolate, "y"))->NumberValue();
     double z = posObj->Get(String::NewFromUtf8(isolate, "z"))->NumberValue();
 
+    Local<Object> mvObj = args[1]->ToObject();
+    std::vector<double> mvArray;
+    for(int i = 0; i < 16; i++)
+        mvArray.push_back(mvObj->Get(i)->NumberValue());
+
+    Local<Object> projObj = args[2]->ToObject();
+    std::vector<double> projArray;
+    for(int i = 0; i < 16; i++)
+        projArray.push_back(projObj->Get(i)->NumberValue());
+
     double distance;
     glm::vec3 nearest;
     glm::vec3 pos(x,y,z);
-    spatialStructure->nearest_vpoint(pos, nearest, distance);
+    spatialStructure->nearest_vpoint(pos, mvArray, projArray, nearest, distance);
 
     output->Set(String::NewFromUtf8(isolate, "distance"),
            Number::New(isolate, distance)); 
