@@ -8,6 +8,7 @@
 
 using namespace v8;
 
+// TODO convention name + explicit internal method
 int GetArrayLength(const FunctionCallbackInfo<Value>& args)
 {
     if (args.Length() != 1 || !args[0]->IsArray())
@@ -22,15 +23,15 @@ int GetArrayLength(const FunctionCallbackInfo<Value>& args)
     return length;
 }
 
-SpatialStructure* speedCalculator = new SpatialStructure();
+SpatialStructure* spatialStructure = new SpatialStructure();
 
 void stats(const FunctionCallbackInfo<Value>& args) {
 
     Isolate* isolate = args.GetIsolate();
     Local<Object> output = Object::New(isolate);
 
-    int numPoints = speedCalculator->count_points();
-    int numSpheres = speedCalculator->count_spheres();
+    int numPoints = spatialStructure->count_points();
+    int numSpheres = spatialStructure->count_spheres();
 
     output->Set(String::NewFromUtf8(isolate, "num_points"),
             Number::New(isolate, numPoints));
@@ -58,11 +59,11 @@ void points(const FunctionCallbackInfo<Value>& args) {
         float x = array->Get(i)->NumberValue();
         float y = array->Get(i+1)->NumberValue();
         float z = array->Get(i+2)->NumberValue();
-        speedCalculator->add_point(glm::vec3(x,y,z));
+        spatialStructure->add_point(glm::vec3(x,y,z));
     }
 
     output->Set(String::NewFromUtf8(isolate, "total"),
-        Number::New(isolate, speedCalculator->count_points()));
+        Number::New(isolate, spatialStructure->count_points()));
 
     args.GetReturnValue().Set(output);
 }
@@ -93,11 +94,11 @@ void spheres(const FunctionCallbackInfo<Value>& args) {
         int id = (int) sphereObj->Get(idStr)->NumberValue();
         double radius = sphereObj->Get(radiusStr)->NumberValue();
 
-        speedCalculator->update_sphere(id, glm::vec3(x,y,z), radius);
+        spatialStructure->update_sphere(id, glm::vec3(x,y,z), radius);
     }
 
     output->Set(String::NewFromUtf8(isolate, "total"),
-        Number::New(isolate, speedCalculator->count_spheres()));
+        Number::New(isolate, spatialStructure->count_spheres()));
 
     args.GetReturnValue().Set(output);
 }
@@ -107,7 +108,7 @@ void reset(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = args.GetIsolate();
     Local<Object> output = Object::New(isolate);
 
-    bool success = speedCalculator->reset();
+    bool success = spatialStructure->reset();
 
     output->Set(String::NewFromUtf8(isolate, "success"),
             Boolean::New(isolate, success));
@@ -115,7 +116,7 @@ void reset(const FunctionCallbackInfo<Value>& args) {
     args.GetReturnValue().Set(output);
 }
 
-void velocity(const FunctionCallbackInfo<Value>& args) {
+void nearest_point(const FunctionCallbackInfo<Value>& args) {
 
     Isolate* isolate = args.GetIsolate();
     Local<Object> output = Object::New(isolate);
@@ -125,37 +126,95 @@ void velocity(const FunctionCallbackInfo<Value>& args) {
     double y = posObj->Get(String::NewFromUtf8(isolate, "y"))->NumberValue();
     double z = posObj->Get(String::NewFromUtf8(isolate, "z"))->NumberValue();
 
-    double speed;
+    double distance;
     glm::vec3 nearest;
     glm::vec3 pos(x,y,z);
+    spatialStructure->nearest_point(pos, nearest, distance);
 
-    if(speedCalculator->velocity(pos, nearest, speed))
-    {
-        // Set velocity
-        output->Set(String::NewFromUtf8(isolate, "velocity"),
-               Number::New(isolate, speed)); 
+    output->Set(String::NewFromUtf8(isolate, "distance"),
+           Number::New(isolate, distance)); 
 
-        // Set Nearest point
-        Local<Object> nearestObj = Object::New(isolate);
-        nearestObj->Set(String::NewFromUtf8(isolate, "x"),
-               Number::New(isolate, nearest.x));
-        nearestObj->Set(String::NewFromUtf8(isolate, "y"),
-               Number::New(isolate, nearest.y));
-        nearestObj->Set(String::NewFromUtf8(isolate, "z"),
-               Number::New(isolate, nearest.z));
-        output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
-    }
+    Local<Object> nearestObj = Object::New(isolate);
+    nearestObj->Set(String::NewFromUtf8(isolate, "x"),
+           Number::New(isolate, nearest.x));
+    nearestObj->Set(String::NewFromUtf8(isolate, "y"),
+           Number::New(isolate, nearest.y));
+    nearestObj->Set(String::NewFromUtf8(isolate, "z"),
+           Number::New(isolate, nearest.z));
+    output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
+
+    args.GetReturnValue().Set(output);
+}
+
+void nearest_vpoint(const FunctionCallbackInfo<Value>& args) {
+
+    Isolate* isolate = args.GetIsolate();
+    Local<Object> output = Object::New(isolate);
+
+    Local<Object> posObj = args[0]->ToObject();
+    double x = posObj->Get(String::NewFromUtf8(isolate, "x"))->NumberValue();
+    double y = posObj->Get(String::NewFromUtf8(isolate, "y"))->NumberValue();
+    double z = posObj->Get(String::NewFromUtf8(isolate, "z"))->NumberValue();
+
+    double distance;
+    glm::vec3 nearest;
+    glm::vec3 pos(x,y,z);
+    spatialStructure->nearest_vpoint(pos, nearest, distance);
+
+    output->Set(String::NewFromUtf8(isolate, "distance"),
+           Number::New(isolate, distance)); 
+
+    Local<Object> nearestObj = Object::New(isolate);
+    nearestObj->Set(String::NewFromUtf8(isolate, "x"),
+           Number::New(isolate, nearest.x));
+    nearestObj->Set(String::NewFromUtf8(isolate, "y"),
+           Number::New(isolate, nearest.y));
+    nearestObj->Set(String::NewFromUtf8(isolate, "z"),
+           Number::New(isolate, nearest.z));
+    output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
+
+    args.GetReturnValue().Set(output);
+}
+
+void nearest_object(const FunctionCallbackInfo<Value>& args) {
+
+    Isolate* isolate = args.GetIsolate();
+    Local<Object> output = Object::New(isolate);
+
+    Local<Object> posObj = args[0]->ToObject();
+    double x = posObj->Get(String::NewFromUtf8(isolate, "x"))->NumberValue();
+    double y = posObj->Get(String::NewFromUtf8(isolate, "y"))->NumberValue();
+    double z = posObj->Get(String::NewFromUtf8(isolate, "z"))->NumberValue();
+
+    double distance;
+    glm::vec3 nearest;
+    glm::vec3 pos(x,y,z);
+    spatialStructure->nearest_object(pos, nearest, distance);
+
+    output->Set(String::NewFromUtf8(isolate, "distance"),
+           Number::New(isolate, distance)); 
+
+    Local<Object> nearestObj = Object::New(isolate);
+    nearestObj->Set(String::NewFromUtf8(isolate, "x"),
+           Number::New(isolate, nearest.x));
+    nearestObj->Set(String::NewFromUtf8(isolate, "y"),
+           Number::New(isolate, nearest.y));
+    nearestObj->Set(String::NewFromUtf8(isolate, "z"),
+           Number::New(isolate, nearest.z));
+    output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
 
     args.GetReturnValue().Set(output);
 }
 
 void init(Handle<Object> target) {
-    NODE_SET_METHOD(target, "stats",    stats);
-    NODE_SET_METHOD(target, "points",   points);
+    NODE_SET_METHOD(target, "stats",            stats);
+    NODE_SET_METHOD(target, "points",           points);
     //NODE_SET_METHOD(target, "cubes",    cubes);
-    NODE_SET_METHOD(target, "spheres",  spheres);
-    NODE_SET_METHOD(target, "reset",    reset);
-    NODE_SET_METHOD(target, "velocity", velocity);
+    NODE_SET_METHOD(target, "spheres",          spheres);
+    NODE_SET_METHOD(target, "reset",            reset);
+    NODE_SET_METHOD(target, "nearest_point",    nearest_point);
+    NODE_SET_METHOD(target, "nearest_vpoint",   nearest_vpoint);
+    NODE_SET_METHOD(target, "nearest_object",   nearest_object);
 }
 
 NODE_MODULE(binding, init);
