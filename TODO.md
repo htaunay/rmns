@@ -2,8 +2,9 @@
 
 ## Server
 
+[ ] Independent API (nearest, nearest visible, etc)
+[ ] Heuristc
 [ ] Code headers (description)
-[ ] Nearest visible point
 [ ] Async -> Parallelization
 [ ] Grid
 [ ] Cubes
@@ -27,6 +28,8 @@
 [ ] check method case-conventions (oneTwo != one_two)
 [ ] Valgrind
 [ ] Coveralls
+[x] Travis CI
+[x] Nearest visible point
 [x] Route tests
 [x] Define only once V8 strings
 [x] Binding h/cpp

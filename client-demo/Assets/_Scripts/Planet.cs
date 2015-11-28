@@ -73,7 +73,13 @@ public class Planet : MonoBehaviour
 	{
 		Vector3 screenpos = camera.WorldToScreenPoint(transform.position);
 		if(screenpos.z > 0)
-			GUI.Label(new Rect(screenpos.x, camera.pixelHeight - screenpos.y, 50, 20), gameObject.name);
+		{
+			float distanceInAu = Vector3.Distance(transform.position, camera.transform.position);
+			double distanceInKm = Scales.Instance.GetRealValue(distanceInAu);
+
+			string text = gameObject.name + "\n" + Scales.Instance.FormatDistanceText(distanceInKm);
+			GUI.Label(new Rect(screenpos.x, camera.pixelHeight - screenpos.y, 80, 40), text);
+		}
 	}
 
 	private void OnDrawGizmos()
@@ -106,45 +112,4 @@ public class Planet : MonoBehaviour
 		pointObj.transform.parent = root.transform;
 		pointObj.transform.localPosition = Vector3.zero;
 	}
-
-	/*private GameObject InstantiateMesh(Vector3[] points, string name, GameObject root, int meshInd, int nPoints)
-	{
-		// Create Mesh
-		GameObject pointGroup = new GameObject (name + meshInd);
-		pointGroup.AddComponent<MeshFilter>();
-		pointGroup.AddComponent<MeshRenderer>();
-		pointGroup.renderer.material = null;//matVertex;
-		
-		pointGroup.GetComponent<MeshFilter>().mesh = CreateMesh(points, meshInd, nPoints, POINT_LIMIT);
-		pointGroup.transform.parent = root.transform;
-		
-		return pointGroup;
-		// Store Mesh
-		//UnityEditor.AssetDatabase.CreateAsset(pointGroup.GetComponent<MeshFilter> ().mesh, "Assets/Resources/PointCloudMeshes/" + filename + @"/" + filename + meshInd + ".asset");
-		//UnityEditor.AssetDatabase.SaveAssets ();
-		//UnityEditor.AssetDatabase.Refresh();
-	}
-	
-	private Mesh CreateMesh(Vector3[] points, int id, int nPoints, int limitPoints)
-	{    
-		Mesh mesh = new Mesh ();
-		
-		Vector3[] myPoints = new Vector3[nPoints]; 
-		int[] indecies = new int[nPoints];
-		Color[] myColors = new Color[nPoints];
-		
-		for(int i=0;i<nPoints;++i) {
-			myPoints[i] = points[id*POINT_LIMIT + i];
-			indecies[i] = i;
-			myColors[i] = Color.white;
-		}
-		
-		mesh.vertices = myPoints;
-		mesh.colors = myColors;
-		mesh.SetIndices(indecies, MeshTopology.Points,0);
-		mesh.uv = new Vector2[nPoints];
-		mesh.normals = new Vector3[nPoints];
-		
-		return mesh;
-	}*/
 }
