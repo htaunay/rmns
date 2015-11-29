@@ -18,6 +18,7 @@ public class Server : MonoBehaviour {
 	#endregion
 
 	private bool initialized = false;
+	private double lastTimestamp = 0;
 	
 	private int MAX_POINTS_PER_REQUEST = 1024;
 
@@ -109,7 +110,13 @@ public class Server : MonoBehaviour {
 			
 			// TODO LOGGER
 			Debug.Log (req.responseTime);
-			JSONObject result = new JSONObject( req.response.Text ).GetField("result");
+			JSONObject responseObj = new JSONObject( req.response.Text );
+			double timestamp = responseObj.GetField("timestamp").n;
+
+			if(timestamp <= lastTimestamp) return;
+			else lastTimestamp = timestamp;
+
+			JSONObject result = responseObj.GetField("result");
 			float speed = float.Parse(result.GetField("velocity").ToString());
 			navigator.SetTranslationSpeed(Mathf.Max(speed / /*TODO remove*/5.0f, 0.1f));
 
