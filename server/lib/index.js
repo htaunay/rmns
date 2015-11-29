@@ -39,6 +39,8 @@ var router = function(url, data, cb) {
 
 var server = module.exports = http.createServer(function (request, response) {
 
+    var timestamp = null;
+
     var data = "";
     request.on("data", function(chunk) {
         data += chunk;
@@ -46,12 +48,13 @@ var server = module.exports = http.createServer(function (request, response) {
 
     request.on("end", function() {
 
+        timestamp = Date.now();
         router(request.url, data, function(obj) {
 
             response.statusCode = obj.code;
             response.setHeader("Content-Type", "application/json");
 
-            var json = { "msg": obj.msg };
+            var json = { "msg": obj.msg, "timestamp": timestamp };
             if("result" in obj) {
                 json["result"] = obj.result;
             }
