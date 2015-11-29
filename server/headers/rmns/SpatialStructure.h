@@ -15,6 +15,9 @@ class SpatialStructure
     public:
         SpatialStructure();
 
+        void activateGrid(bool activate);
+        void setCellSize(float cellSize);
+
         bool reset();
         int count_points();
         int count_spheres();
@@ -43,6 +46,9 @@ class SpatialStructure
         void nearest_sphere(glm::vec3 pos, glm::vec3& nearest, double& distance);
 
     private:
+        bool _activate_grid;
+        float _cell_size;
+
         typedef spatial::point_multiset<3, glm::vec3> Vec3Spatial;
         typedef spatial::neighbor_iterator<Vec3Spatial> Iterator;
         Vec3Spatial* _spatialStructure;

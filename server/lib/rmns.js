@@ -1,4 +1,6 @@
 var spatial = require("../build/Release/binding");
+var config = require("../config/config.json");
+spatial.setup_config(config);
 
 var rmns = {};
 

@@ -8,6 +8,20 @@ SpatialStructure::SpatialStructure()
 {
     //_helper = new VisibilityHelper();
     _spatialStructure = new Vec3Spatial();
+
+    // Default values
+    _activate_grid = false;
+    _cell_size = 1.0f;
+}
+
+void SpatialStructure::activateGrid(bool activate)
+{
+    _activate_grid = activate;
+}
+
+void SpatialStructure::setCellSize(float cellSize)
+{
+    _cell_size = cellSize;
 }
 
 bool SpatialStructure::reset()
@@ -29,20 +43,17 @@ int SpatialStructure::count_spheres()
 
 bool SpatialStructure::add_point(glm::vec3 point)
 {
-    // TODO/*cell_size*/ cell size
-    // TODO use grid config
-    if(true)
+    if(_activate_grid)
     {
-        float cellSize = 1.0f;
         glm::vec3 grid_point = glm::vec3(
-            (int)(point.x / cellSize),/*cell_size*/
-            (int)(point.y / cellSize),/*cell_size*/
-            (int)(point.z / cellSize) /*cell_size*/
+            (int)(point.x / _cell_size),
+            (int)(point.y / _cell_size),
+            (int)(point.z / _cell_size)
         );
         Vec3Set::iterator it = _grid.find(grid_point);
         if(it == _grid.end())
         {
-            _spatialStructure->insert(grid_point * cellSize)/*cell_size*/;
+            _spatialStructure->insert(grid_point * _cell_size);
             _grid.insert(grid_point);
         }
     }
@@ -56,7 +67,6 @@ bool SpatialStructure::add_point(glm::vec3 point)
 
 bool SpatialStructure::add_points(std::vector<glm::vec3> points)
 {
-    //_spatialStructure->insert(points.begin(), points.end());
     for(unsigned int i = 0; i < points.size(); i++)
         add_point(points[i]);
 

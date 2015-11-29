@@ -25,6 +25,35 @@ int GetArrayLength(const FunctionCallbackInfo<Value>& args)
 
 SpatialStructure* spatialStructure = new SpatialStructure();
 
+void setup_config(const FunctionCallbackInfo<Value>& args)
+{
+    Isolate* isolate = args.GetIsolate();
+    Local<Object> output = Object::New(isolate);
+
+    Local<Object> config_obj = args[0]->ToObject();
+    Local<Array> property_names = config_obj->GetOwnPropertyNames();
+
+    for (unsigned int i = 0; i < property_names->Length(); ++i)
+    {
+        Local<Value> keyValue = property_names->Get(i);
+        String::Utf8Value keyUtf8(keyValue);
+        std::string key = std::string(*keyUtf8);
+
+        Local<Value> value = config_obj->Get(keyValue->ToString());
+
+        if(key.compare("activate_grid") == 0)
+            spatialStructure->activateGrid(value->BooleanValue());
+
+        if(key.compare("cell_size") == 0)
+            spatialStructure->setCellSize(value->NumberValue());
+    }
+
+    output->Set(String::NewFromUtf8(isolate, "success"),
+            Boolean::New(isolate, true));
+
+    args.GetReturnValue().Set(output);
+}
+
 void stats(const FunctionCallbackInfo<Value>& args) {
 
     Isolate* isolate = args.GetIsolate();
@@ -207,6 +236,7 @@ void nearest_object(const FunctionCallbackInfo<Value>& args) {
 }
 
 void init(Handle<Object> target) {
+    NODE_SET_METHOD(target, "setup_config",     setup_config);
     NODE_SET_METHOD(target, "stats",            stats);
     NODE_SET_METHOD(target, "points",           points);
     //NODE_SET_METHOD(target, "cubes",    cubes);
