@@ -99,25 +99,10 @@ public class Server : MonoBehaviour {
 		Hashtable json = new Hashtable();
 
 		Hashtable posObj = new Hashtable();
-		posObj.Add("x", pos.x);
+		json.Add("x", pos.x);
 		// TODO configure invert
-		posObj.Add("y", pos.y);
-		posObj.Add("z", pos.z);
-		json.Add("pos", posObj);
-
-		ArrayList mv = new ArrayList();
-		ArrayList proj = new ArrayList();
-		Matrix4x4 camMv = Camera.main.worldToCameraMatrix;
-		Matrix4x4 camProj = Camera.main.projectionMatrix;
-
-		for(int i = 0; i < 16; i++)
-		{
-			mv.Add(camMv[i]);
-			proj.Add(camProj[i]);
-		}
-
-		json.Add("mv", mv);
-		json.Add("proj", proj);
+		json.Add("y", pos.y);
+		json.Add("z", pos.z);
 
 		HTTP.Request request = new HTTP.Request( "post", url + "/velocity", json );
 		request.Send( ( req ) => {
