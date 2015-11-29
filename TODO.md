@@ -3,6 +3,16 @@
 ## Server
 
 [ ] Route tests
+[ ] Independent API (nearest, nearest visible, etc)
+[ ] Check is_vec3 and others in rmns.js
+[ ] Heuristc
+[ ] Code headers (description)
+[ ] VisibilityHelper and Plane/CameraInfo redundant
+[ ] Async -> Parallelization
+[ ] Grid
+[ ] Cubes
+[ ] Syntastic Js
+[ ] Repeated code in binding.cpp
 [ ] Performance tests (https://www.npmjs.com/package/loadtest)
 [ ] Separate input/internal error msgs (400 from 500)
 [ ] Dox: cpp implies everything 100% correct
