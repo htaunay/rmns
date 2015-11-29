@@ -35,8 +35,8 @@
 ## Client Demo
 
 [ ] Better file loading convention, last blank line is ugly
-[ ] Planet lables with distance
 [ ] Sub space inside planet atmospheres
+[x] Planet labels with distance
 [x] Invert Y/Z option
 [x] Asteroid belt as point cloud
 [x] Create HTTP module for all server communication
