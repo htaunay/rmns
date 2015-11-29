@@ -8,6 +8,7 @@
 #include <spatial/neighbor_iterator.hpp>
 
 #include <rmns/Sphere.h>
+#include <rmns/CameraInfo.h>
 #include <rmns/VisibilityHelper.h>
 
 class SpatialStructure
@@ -23,13 +24,30 @@ class SpatialStructure
         bool add_points(std::vector<glm::vec3> points);
         bool update_sphere(int id, glm::vec3 center, double radius);
 
-        void nearest_point(glm::vec3 pos, glm::vec3& nearest, double& distance);
-        void nearest_vpoint(glm::vec3 pos, std::vector<double> mvArray,
-            std::vector<double> projArray, glm::vec3& nearest, double& distance);
-        void nearest_object(glm::vec3 pos, glm::vec3& nearest, double& distance);
+        void nearest_point(glm::vec3 pos,
+                           glm::vec3& nearest,
+                           double& distance);
+
+        void nearest_vpoint(CameraInfo* camera,
+                            glm::vec3& nearest,
+                            double& distance);
+
+        void nearest_object(glm::vec3 pos,
+                            glm::vec3& nearest,
+                            double& distance);
+
+        void nearest_vobject(CameraInfo* camera,
+                             glm::vec3& nearest,
+                             double& distance);
 
     private:
-        void nearest_sphere(glm::vec3 pos, glm::vec3& nearest, double& distance);
+        void nearest_sphere(glm::vec3 pos,
+                            glm::vec3& nearest,
+                            double& distance);
+
+        void nearest_vsphere(CameraInfo* camera,
+                             glm::vec3& nearest,
+                             double& distance);
 
     private:
         typedef spatial::point_multiset<3, glm::vec3> Vec3Spatial;
