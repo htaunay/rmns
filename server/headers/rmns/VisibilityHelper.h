@@ -1,6 +1,7 @@
 #ifndef __VISIBILITY_HELPER__
 #define __VISIBILITY_HELPER__
 
+#include <iostream>
 #include <algorithm>
 
 #include <glm/vec3.hpp>
@@ -21,13 +22,80 @@ class VisibilityHelper
 public:
     VisibilityHelper(){}
 
-    /*void setMatrices( glm::mat4 mv, glm::mat4 proj )
+    void setMatrices( glm::mat4 mv, glm::mat4 proj )
     {
         _mv = mv;
         _proj = proj;
         _mvp = mv * proj;
         calculateFrustumPoints();
     }
+
+    template <typename Key, typename dimension_type>
+    Side planeRelatedToFrustum( Key input, dimension_type node_dim ) const
+    {
+        //std::cout << "NODE_DIM => " << node_dim << "\n";
+        //std::cout << "INPUT => " << input[0] << ", " << input[1] << ", " << input[2] << "\n";
+
+        double planeEq = input[node_dim];
+        double sgn = planeEq - _frustumMin[node_dim];
+        if( sgn < -10.e-6 )
+        {
+            //std::cout << "INPUT => " << input[0] << ", " << input[1] << ", " << input[2] << 
+            //    "is BELOW " << _frustumMin[node_dim] << " in dim " << node_dim << "\n";
+            //return BELOW;
+        }
+
+        sgn = planeEq - _frustumMax[node_dim];
+        if( sgn > 10.e-6 )
+        {
+            //std::cout << "INPUT => " << input[0] << ", " << input[1] << ", " << input[2] << 
+            //    "is ABOVE " << _frustumMax[node_dim] << " in dim " << node_dim << "\n";
+            //return ABOVE;
+        }
+        
+        //std::cout << "INPUT => " << input[0] << ", " << input[1] << ", " << input[2] << 
+        //    " is CROSS between " << _frustumMin[node_dim] << " and " << _frustumMax[node_dim] 
+        //    << " in dim " << node_dim << "\n";
+        return CROSS;
+    }
+
+    template <typename Key>
+    bool visible( Key current ) const
+    {
+        // TODO Compare point to each plane?
+
+        //for(int i =0; i < 3; i++)
+        //{
+        //    if(current[i] < _frustumMin[i])
+        //    {
+        //        //std::cout << current[i] << " is less than " << _frustumMin[i] << "\n";
+        //        return false;
+        //    }
+
+        //    if(current[i] > _frustumMax[i])
+        //    {
+        //        //std::cout << current[i] << " is more than " << _frustumMax[i] << "\n";
+        //        return false;
+        //    }
+        //}
+
+       // std::cout << current[0] << ", " << current[1] << ", " << current[2]<<
+       //     " is Visible between " << _frustumMin[0] << ", " << _frustumMin[1] <<
+       //     ", " << _frustumMin[2] << " and " << _frustumMax[0] << ", " << 
+       //     _frustumMax[1] << ", " << _frustumMax[2] << "\n";
+        // return true;
+        glm::vec4 input(current[0], current[1], current[2], 1);
+
+        glm::vec4 result = input * _mvp;
+        bool visible = abs(result[0]) < result[3] && 
+                       abs(result[1]) < result[3] && 
+                       0 < result[2] && 
+                       result[2] < result[3];
+
+        return visible;
+    }
+
+private:
 
     void calculateFrustumPoints()
     {
@@ -76,59 +144,12 @@ public:
         }
 
         delete v;
-    }*/
-
-    template <typename Key, typename dimension_type>
-    Side planeRelatedToFrustum( Key input, dimension_type node_dim ) const
-    {
-        double planeEq = input[node_dim];
-        double sgn = planeEq - _frustumMin[node_dim];
-        if( sgn < -10.e-6 )
-        {
-            return BELOW;
-        }
-
-        sgn = planeEq - _frustumMax[node_dim];
-        if( sgn > 10.e-6 )
-        {
-            return ABOVE;
-        }
-        
-        return CROSS;
-    }
-
-    template <typename Key>
-    void getFrustumAABB( Key& min, Key& max )
-    {
-        for( int i = 0; i < 3; i++ )
-        {
-            min[i] = _frustumMin[i];
-            max[i] = _frustumMax[i];
-        }
-        
-    }
-
-    template <typename Key>
-    bool visible( Key current ) const
-    {
-        // TODO Compare point to each plane?
-
-        //glm::vec4 input( current[0], current[1], current[2], 1 );
-
-        //glm::vec4 result = input * _mvp;
-        //bool visible = abs(result.x()) < result.w() && 
-        //       abs(result.y()) < result.w() && 
-        //       0 < result.z() && 
-        //       result.z() < result.w();
-
-        //return visible;
-        return true;
     }
     
 private:
-    //glm::mat4 _mv;
-    //glm::mat4 _proj;
-    //glm::mat4 _mvp;
+    glm::mat4 _mv;
+    glm::mat4 _proj;
+    glm::mat4 _mvp;
     glm::vec3 _frustumMin;
     glm::vec3 _frustumMax;
 };

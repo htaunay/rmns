@@ -3,10 +3,13 @@
 #include <iostream>
 #include <glm/vec3.hpp>
 #include <glm/gtx/norm.hpp>
+#include <rmns/CameraInfo.h>
 #include <rmns/SpatialStructure.h>
 #include <spatial/point_multiset.hpp>
 
 using namespace v8;
+
+// ********** Helper Methods ********** //
 
 // TODO convention name + explicit internal method
 int GetArrayLength(const FunctionCallbackInfo<Value>& args)
@@ -22,6 +25,18 @@ int GetArrayLength(const FunctionCallbackInfo<Value>& args)
 
     return length;
 }
+
+glm::vec3 Vec3FromJsonObj(Local<Object> obj, Isolate* isolate)
+{
+    double x = obj->Get(String::NewFromUtf8(isolate, "x"))->NumberValue();
+    double y = obj->Get(String::NewFromUtf8(isolate, "y"))->NumberValue();
+    double z = obj->Get(String::NewFromUtf8(isolate, "z"))->NumberValue();
+
+    return glm::vec3(x,y,z);
+}
+
+// ********** Binding Methods ********** //
+
 
 SpatialStructure* spatialStructure = new SpatialStructure();
 
@@ -180,15 +195,29 @@ void nearest_vpoint(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = args.GetIsolate();
     Local<Object> output = Object::New(isolate);
 
-    Local<Object> posObj = args[0]->ToObject();
-    double x = posObj->Get(String::NewFromUtf8(isolate, "x"))->NumberValue();
-    double y = posObj->Get(String::NewFromUtf8(isolate, "y"))->NumberValue();
-    double z = posObj->Get(String::NewFromUtf8(isolate, "z"))->NumberValue();
+    glm::vec3 eye       = Vec3FromJsonObj(args[0]->ToObject(), isolate);
+    glm::vec3 center    = Vec3FromJsonObj(args[1]->ToObject(), isolate);
+    glm::vec3 up        = Vec3FromJsonObj(args[2]->ToObject(), isolate);
+    float fovy          = args[3]->NumberValue();
+    float aspect        = args[4]->NumberValue();
+    float znear         = args[5]->NumberValue();
+    float zfar          = args[6]->NumberValue();
+    
+    //Local<Object> mvObj = args[1]->ToObject();
+    //std::vector<double> mvArray;
+    //for(int i = 0; i < 16; i++)
+    //    mvArray.push_back(mvObj->Get(i)->NumberValue());
 
+    //Local<Object> projObj = args[2]->ToObject();
+    //std::vector<double> projArray;
+    //for(int i = 0; i < 16; i++)
+    //    projArray.push_back(projObj->Get(i)->NumberValue());
+
+    CameraInfo* camera = new CameraInfo(eye, center, up,
+                                        fovy, aspect, znear, zfar);
     double distance;
     glm::vec3 nearest;
-    glm::vec3 pos(x,y,z);
-    spatialStructure->nearest_vpoint(pos, nearest, distance);
+    spatialStructure->nearest_vpoint(camera, nearest, distance);
 
     output->Set(String::NewFromUtf8(isolate, "distance"),
            Number::New(isolate, distance)); 
@@ -235,6 +264,61 @@ void nearest_object(const FunctionCallbackInfo<Value>& args) {
     args.GetReturnValue().Set(output);
 }
 
+void nearest_vobject(const FunctionCallbackInfo<Value>& args) {
+
+    Isolate* isolate = args.GetIsolate();
+    Local<Object> output = Object::New(isolate);
+
+    glm::vec3 eye       = Vec3FromJsonObj(args[0]->ToObject(), isolate);
+    glm::vec3 center    = Vec3FromJsonObj(args[1]->ToObject(), isolate);
+    glm::vec3 up        = Vec3FromJsonObj(args[2]->ToObject(), isolate);
+    float fovy          = args[3]->NumberValue();
+    float aspect        = args[4]->NumberValue();
+    float znear         = args[5]->NumberValue();
+    float zfar          = args[6]->NumberValue();
+
+    //Local<Object> posObj = args[0]->ToObject();
+    //double x = posObj->Get(String::NewFromUtf8(isolate, "x"))->NumberValue();
+    //double y = posObj->Get(String::NewFromUtf8(isolate, "y"))->NumberValue();
+    //double z = posObj->Get(String::NewFromUtf8(isolate, "z"))->NumberValue();
+
+    CameraInfo* camera = new CameraInfo(eye, center, up,
+                                        fovy, aspect, znear, zfar);
+    double distance;
+    glm::vec3 nearest;
+    std::vector<glm::vec3> points;
+    spatialStructure->nearest_vobject(camera, nearest, distance, points);
+
+    output->Set(String::NewFromUtf8(isolate, "distance"),
+           Number::New(isolate, distance)); 
+
+    Local<Array> pointsObj = Array::New(isolate, 8);
+    for(int i = 0; i < 8; i++)
+    {
+        Local<Object> point = Object::New(isolate);
+        point->Set(String::NewFromUtf8(isolate, "x"),
+               Number::New(isolate, points[i].x));
+        point->Set(String::NewFromUtf8(isolate, "y"),
+               Number::New(isolate, points[i].y));
+        point->Set(String::NewFromUtf8(isolate, "z"),
+               Number::New(isolate, points[i].z));
+
+        pointsObj->Set(i, point);
+    }
+    output->Set(String::NewFromUtf8(isolate, "points"), pointsObj); 
+
+    Local<Object> nearestObj = Object::New(isolate);
+    nearestObj->Set(String::NewFromUtf8(isolate, "x"),
+           Number::New(isolate, nearest.x));
+    nearestObj->Set(String::NewFromUtf8(isolate, "y"),
+           Number::New(isolate, nearest.y));
+    nearestObj->Set(String::NewFromUtf8(isolate, "z"),
+           Number::New(isolate, nearest.z));
+    output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
+
+    args.GetReturnValue().Set(output);
+}
+
 void init(Handle<Object> target) {
     NODE_SET_METHOD(target, "setup_config",     setup_config);
     NODE_SET_METHOD(target, "stats",            stats);
@@ -245,6 +329,7 @@ void init(Handle<Object> target) {
     NODE_SET_METHOD(target, "nearest_point",    nearest_point);
     NODE_SET_METHOD(target, "nearest_vpoint",   nearest_vpoint);
     NODE_SET_METHOD(target, "nearest_object",   nearest_object);
+    NODE_SET_METHOD(target, "nearest_vobject",  nearest_vobject);
 }
 
 NODE_MODULE(binding, init);
