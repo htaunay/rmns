@@ -4,14 +4,31 @@ var rmns = {};
 
 /* ================ HELPER METHODS =============== */
 
-var isNum = function(num) {
+var is_num = function(num) {
     return typeof num === "number";
+};
+
+var is_pos_num = function(num) {
+    return is_num(num) && num >= 0;
+};
+
+var is_vec3 = function(vec3) {
+
+    if(typeof vec3 !== "object")
+        return false;
+
+    if(!("x" in vec3) || !("y" in vec3) || !("z" in vec3))
+        return false;
+    if(!is_num(vec3.x) || !is_num(vec3.y) || !is_num(vec3.z))
+        return false;
+
+    return true;
 };
 
 var is_nearest_result_valid = function(result) {
 
     if(!("distance" in result) ||
-        !isNum(result.distance) ||
+        !is_num(result.distance) ||
         result.distance < 0)
         return false; 
 
@@ -21,9 +38,9 @@ var is_nearest_result_valid = function(result) {
         !("z" in result.nearest))
         return false; 
 
-    if(!isNum(result.nearest.x) ||
-        !isNum(result.nearest.y) ||
-        !isNum(result.nearest.z))
+    if(!is_num(result.nearest.x) ||
+        !is_num(result.nearest.y) ||
+        !is_num(result.nearest.z))
         return false; 
 
     return true;
@@ -142,12 +159,12 @@ rmns.register_points = function(data) {
         return this.POINTS_ERROR();
 
     for(var key in points) {
-        if(!isNum(points[key]))
+        if(!is_num(points[key]))
             return this.POINTS_ERROR();
     }
 
     var result = spatial.points(points);
-    if(!("total" in result) || !isNum(result.total) || result.total < 1)
+    if(!("total" in result) || !is_num(result.total) || result.total < 1)
         return this.POINTS_ERROR();
 
     return this.POINTS_OK(points.length / 3, result.total);
@@ -175,17 +192,17 @@ rmns.register_spheres = function(data) {
         var center = sphere.center;
         if(!("x" in center) || !("y" in center) || !("z" in center))
             return this.SPHERES_ERROR();
-        if(!isNum(center.x) || !isNum(center.y) || !isNum(center.z))
+        if(!is_num(center.x) || !is_num(center.y) || !is_num(center.z))
             return this.SPHERES_ERROR();
 
         if(!("id" in sphere) || !("radius" in sphere))
             return this.SPHERES_ERROR();
-        if(!isNum(sphere.id) || !isNum(sphere.radius) || sphere.radius <= 0)
+        if(!is_num(sphere.id) || !is_num(sphere.radius) || sphere.radius <= 0)
             return this.SPHERES_ERROR();
     }
 
     var result = spatial.spheres(spheres);
-    if(!("total" in result) || !isNum(result.total) || result.total < 1)
+    if(!("total" in result) || !is_num(result.total) || result.total < 1)
         return this.SPHERES_ERROR();
 
     return this.SPHERES_OK(spheres.length, result.total);
@@ -204,47 +221,38 @@ rmns.reset = function() {
 
 rmns.calc_velocity = function(data) {
 
-    var pos;
-    var mv;
-    var proj;
+    var eye;
+    var center;
+    var up;
+    var fovy;
+    var aspect;
+    var znear;
+    var zfar;
 
     try {
-        data = JSON.parse(data);
-        pos = data.pos;
-        mv = data.mv;
-        proj = data.proj;
+        data    = JSON.parse(data);
+        eye     = data.eye;
+        center  = data.center;
+        up      = data.up;
+        fovy    = data.fovy;
+        aspect  = data.aspect;
+        znear   = data.znear;
+        zfar    = data.zfar;
     }
     catch(e) {
         return this.VELOCITY_ERROR();
     }
 
-    if(typeof pos !== "object")
+    if(!is_vec3(eye) || !is_vec3(center) || !is_vec3(up))
         return this.VELOCITY_ERROR();
 
-    if(!("x" in pos) || !("y" in pos) || !("z" in pos))
-        return this.VELOCITY_ERROR();
-    if(!isNum(pos.x) || !isNum(pos.y) || !isNum(pos.z))
-        return this.VELOCITY_ERROR();
-
-    if(!Array.isArray(mv))
+    if(!is_pos_num(fovy) || !is_pos_num(aspect) || !is_pos_num(znear) ||
+       !is_pos_num(zfar) || znear >= zfar)
         return this.VELOCITY_ERROR();
 
-    if(mv.length != 16)
-        return this.VELOCITY_ERROR();
-    for(var i = 0; i < 16; i++)
-        if(!isNum(mv[i]))
-            return this.VELOCITY_ERROR();
+    var point_result = spatial.nearest_vpoint(eye, center, up, fovy,
+                                              aspect, znear, zfar);
 
-    if(!Array.isArray(proj))
-        return this.VELOCITY_ERROR();
-
-    if(proj.length != 16)
-        return this.VELOCITY_ERROR();
-    for(var i = 0; i < 16; i++)
-        if(!isNum(proj[i]))
-            return this.VELOCITY_ERROR();
-
-    var point_result = spatial.nearest_vpoint(pos, mv, proj);
     if(!is_nearest_result_valid(point_result))
         return this.VELOCITY_ERROR();
 
@@ -252,7 +260,8 @@ rmns.calc_velocity = function(data) {
     //if(!is_nearest_result_valid(visible_result))
     //    return this.VELOCITY_ERROR();
 
-    var obj_result = spatial.nearest_object(pos);
+    var obj_result = spatial.nearest_vobject(eye, center, up, fovy,
+                                              aspect, znear, zfar);
     if(!is_nearest_result_valid(obj_result))
         return this.VELOCITY_ERROR();
 

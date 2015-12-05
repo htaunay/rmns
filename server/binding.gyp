@@ -4,6 +4,8 @@
             "target_name": "binding",
             "sources": [
                 "src/binding.cpp",
+                "src/CameraInfo.cpp",
+                "src/Plane.cpp",
                 "src/SpatialStructure.cpp",
                 "src/Sphere.cpp"
             ],
