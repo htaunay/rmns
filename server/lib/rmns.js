@@ -104,14 +104,16 @@ rmns.SPHERES_ERROR = function() {
     return {"code": 400, "msg": "Invalid argument type or size"};
 };
 
-rmns.VELOCITY_OK = function(velocity, nearest) {
+rmns.VELOCITY_OK = function(velocity, nearest, points) {
 
     return {
         "code": 200,
         "msg": "Velocity calculated with success",
         "result": {
             "velocity": velocity,
-            "nearest": nearest
+            "nearest": nearest,
+            // TODO DEBUG
+            "points": points
         }
     };
 };
@@ -266,9 +268,9 @@ rmns.calc_velocity = function(data) {
         return this.VELOCITY_ERROR();
 
     if(point_result.distance < obj_result.distance)
-        return this.VELOCITY_OK(point_result.distance, point_result.nearest);
+        return this.VELOCITY_OK(point_result.distance, point_result.nearest, obj_result.points);
     else
-        return this.VELOCITY_OK(obj_result.distance, obj_result.nearest);
+        return this.VELOCITY_OK(obj_result.distance, obj_result.nearest, obj_result.points);
 
     //if(point_result.distance < obj_result.distance &&
     //   point_result.distance < visible_result.distance)

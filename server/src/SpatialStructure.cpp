@@ -103,9 +103,10 @@ void SpatialStructure::nearest_object(glm::vec3 pos, glm::vec3& nearest,
 
 void SpatialStructure::nearest_vobject(CameraInfo* camera,
                                        glm::vec3& nearest,
-                                       double& distance)
+                                       double& distance,
+                                       std::vector<glm::vec3>& points)
 {
-    return nearest_vsphere(camera, nearest, distance);
+    return nearest_vsphere(camera, nearest, distance, points);
 }
 
 void SpatialStructure::nearest_sphere(glm::vec3 pos,
@@ -134,7 +135,8 @@ void SpatialStructure::nearest_sphere(glm::vec3 pos,
 
 void SpatialStructure::nearest_vsphere(CameraInfo* camera,
                                        glm::vec3& nearest,
-                                       double& distance)
+                                       double& distance,
+                                       std::vector<glm::vec3>& points)
 {
     Sphere* sphere = new Sphere(glm::vec3(0,0,0), 0);
     // TODO nearest sphere float, with nearest point double
@@ -154,4 +156,5 @@ void SpatialStructure::nearest_vsphere(CameraInfo* camera,
     distance = minDistance;
     glm::vec3 unit = glm::normalize(camera->get_eye() - sphere->getCenter());
     nearest = sphere->getCenter() + (((float) sphere->getRadius()) * unit);
+    points = camera->campoints();
 }

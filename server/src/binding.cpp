@@ -257,10 +257,26 @@ void nearest_vobject(const FunctionCallbackInfo<Value>& args) {
                                         fovy, aspect, znear, zfar);
     double distance;
     glm::vec3 nearest;
-    spatialStructure->nearest_vobject(camera, nearest, distance);
+    std::vector<glm::vec3> points;
+    spatialStructure->nearest_vobject(camera, nearest, distance, points);
 
     output->Set(String::NewFromUtf8(isolate, "distance"),
            Number::New(isolate, distance)); 
+
+    Local<Array> pointsObj = Array::New(isolate, 8);
+    for(int i = 0; i < 8; i++)
+    {
+        Local<Object> point = Object::New(isolate);
+        point->Set(String::NewFromUtf8(isolate, "x"),
+               Number::New(isolate, points[i].x));
+        point->Set(String::NewFromUtf8(isolate, "y"),
+               Number::New(isolate, points[i].y));
+        point->Set(String::NewFromUtf8(isolate, "z"),
+               Number::New(isolate, points[i].z));
+
+        pointsObj->Set(i, point);
+    }
+    output->Set(String::NewFromUtf8(isolate, "points"), pointsObj); 
 
     Local<Object> nearestObj = Object::New(isolate);
     nearestObj->Set(String::NewFromUtf8(isolate, "x"),

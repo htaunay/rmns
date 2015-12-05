@@ -38,7 +38,8 @@ class SpatialStructure
 
         void nearest_vobject(CameraInfo* camera,
                              glm::vec3& nearest,
-                             double& distance);
+                             double& distance,
+                             std::vector<glm::vec3>& points);
 
     private:
         void nearest_sphere(glm::vec3 pos,
@@ -47,7 +48,8 @@ class SpatialStructure
 
         void nearest_vsphere(CameraInfo* camera,
                              glm::vec3& nearest,
-                             double& distance);
+                             double& distance,
+                             std::vector<glm::vec3>& points);
 
     private:
         typedef spatial::point_multiset<3, glm::vec3> Vec3Spatial;

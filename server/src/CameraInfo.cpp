@@ -14,7 +14,7 @@ CameraInfo::CameraInfo(glm::vec3 eye,
     this->eye    = eye;
     this->center = center;
     this->up     = up;
-    this->fovy   = fovy;
+    this->fovy   = fovy * 1.0f * (3.14159265f/180.0f);
     this->aspect = aspect;
     this->znear  = znear;
     this->zfar   = zfar;
@@ -52,13 +52,8 @@ glm::mat4 CameraInfo::view_matrix()
 
 glm::mat4 CameraInfo::projection_matrix()
 {
-    // TODO custom fovy tweak
-    float final_fovy = fovy;
-    if(true)
-        final_fovy /= 0.5f; // if not driectx *= 0.5
-
     if(is_identity(proj_mat4))
-        proj_mat4 = glm::perspective(final_fovy, aspect, znear, zfar);
+        proj_mat4 = glm::perspective(fovy, aspect, znear, zfar);
 
     // TODO add right hand config (directx) fix
     if(true)
@@ -86,8 +81,8 @@ bool CameraInfo::sphere_inside_frustum(Sphere* sphere)
         distance = _planes[i]->distance(sphere->getCenter());
         if(distance < -sphere->getRadius())
         {
-            printf("Sphere %f %f %f is outside plane %d\n",
-                    sphere->getCenter().x, sphere->getCenter().y, sphere->getCenter().z, i);
+            //printf("Sphere %f %f %f is outside plane %d\n",
+            //        sphere->getCenter().x, sphere->getCenter().y, sphere->getCenter().z, i);
             return false;
         }
     }
@@ -111,26 +106,24 @@ bool CameraInfo::is_identity(glm::mat4 matrix)
 
 void CameraInfo::build_planes()
 {
-    float final_fovy = fovy;
-    if(true)
-        final_fovy /= 0.5f; // if not driectx *= 0.5
-
     glm::vec3 zaxis = glm::normalize(center - eye);
     glm::vec3 xaxis = glm::normalize(glm::cross(up, zaxis));
     glm::vec3 yaxis = glm::cross(zaxis, xaxis);
 
-    printf("EYE = %f\t%f\t%f\n", eye.x, eye.y, eye.z);
-    printf("CENTER = %f\t%f\t%f\n", center.x, center.y, center.z);
-    printf("UP = %f\t%f\t%f\n", up.x, up.y, up.z);
-    printf("Z = %f\t%f\t%f\n", zaxis.x, zaxis.y, zaxis.z);
-    printf("X = %f\t%f\t%f\n", xaxis.x, xaxis.y, xaxis.z);
-    printf("Y = %f\t%f\t%f\n\n", yaxis.x, yaxis.y, yaxis.z);
+    //printf("EYE = %f\t%f\t%f\n", eye.x, eye.y, eye.z);
+    //printf("CENTER = %f\t%f\t%f\n", center.x, center.y, center.z);
+    //printf("UP = %f\t%f\t%f\n", up.x, up.y, up.z);
+    //printf("Z = %f\t%f\t%f\n", zaxis.x, zaxis.y, zaxis.z);
+    //printf("X = %f\t%f\t%f\n", xaxis.x, xaxis.y, xaxis.z);
+    //printf("Y = %f\t%f\t%f\n\n", yaxis.x, yaxis.y, yaxis.z);
 
-    float near_height = 2.0f * tan(final_fovy / 2.0f) * znear;
+    float near_height = 2.0f * tan(fovy/2.0f) * znear;
     float near_width  = near_height * aspect;
 
-    float far_height = 2.0f * tan(final_fovy / 2.0f) * zfar;
+    float far_height = 2.0f * tan(fovy/2.0f) * zfar;
     float far_width  = far_height * aspect;
+
+    //printf("NEAR ZNEAR = %f\tHEIGHT = %f\tWIDTH = %f\n", znear, near_height, near_width);
 
     glm::vec3 nc = eye + zaxis * znear;
 
@@ -146,6 +139,16 @@ void CameraInfo::build_planes()
     glm::vec3 fbl = fc - (yaxis * far_height/2.0f) - (xaxis * far_width/2.0f);
     glm::vec3 fbr = fc - (yaxis * far_height/2.0f) + (xaxis * far_width/2.0f);
 
+    points.clear();
+    points.push_back(ntl);
+    points.push_back(ntr);
+    points.push_back(nbl);
+    points.push_back(nbr);
+    points.push_back(ftl);
+    points.push_back(ftr);
+    points.push_back(fbl);
+    points.push_back(fbr);
+
     //_planes.push_back(new Plane(ntr, ntl, ftl)); // TOP
     //_planes.push_back(new Plane(nbl, nbr, fbr)); // BOTTOM
     //_planes.push_back(new Plane(ntl, nbl, fbl)); // LEFT
@@ -159,4 +162,10 @@ void CameraInfo::build_planes()
     _planes.push_back(new Plane(nbr, fbr, ntr)); // RIGHT
     _planes.push_back(new Plane(ntl, nbr, ntr)); // NEAR PLANE
     _planes.push_back(new Plane(ftr, fbl, ftl)); // FAR PLANE
+}
+
+// TODO DEBUG
+std::vector<glm::vec3> CameraInfo::campoints()
+{
+    return points;
 }
