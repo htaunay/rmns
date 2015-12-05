@@ -4,6 +4,9 @@ using System.Collections;
 
 public class Server : MonoBehaviour {
 
+	// TODO DEBUG
+	public GameObject[] points;
+
 	#region Singleton
 	
 	protected Server() {}
@@ -131,7 +134,8 @@ public class Server : MonoBehaviour {
 		HTTP.Request request = new HTTP.Request( "post", url + "/velocity", json );
 		request.Send( ( req ) => {
 			
-			// LOGGER Debug.Log (req.response.Text);
+			// LOGGER]
+			Debug.Log (req.responseTime);
 			JSONObject obj = new JSONObject( req.response.Text ).GetField("result");
 			float speed = float.Parse(obj.GetField("velocity").ToString());
 			navigator.SetTranslationSpeed(Mathf.Max(speed / /*TODO remove*/5.0f, 0.1f));
@@ -144,6 +148,16 @@ public class Server : MonoBehaviour {
 				float z = float.Parse(nearest.GetField("z").ToString());
 				marker.position = new Vector3(x,y,z);
 			}
+
+//			JSONObject pointsObj = obj.GetField("points");
+//			for(int i = 0; i < 8; i++)
+//			{
+//				JSONObject pointObj = pointsObj.list[i];
+//				float x = float.Parse(pointObj.GetField("x").ToString());
+//				float y = float.Parse(pointObj.GetField("y").ToString());
+//				float z = float.Parse(pointObj.GetField("z").ToString());
+//				points[i].transform.position = new Vector3(x,y,z);
+//			}
 		});
 	}
 

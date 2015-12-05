@@ -9,6 +9,7 @@
 [ ] VisibilityHelper and Plane/CameraInfo redundant
 [ ] Async -> Parallelization
 [ ] Cubes
+[ ] Max speed config
 [ ] Syntastic Js
 [ ] Open source license
 [ ] Repeated code in binding.cpp
