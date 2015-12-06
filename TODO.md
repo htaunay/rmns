@@ -2,32 +2,39 @@
 
 ## Server
 
-[ ] Independent API (nearest, nearest visible, etc)
 [ ] Heuristc
-[ ] Code headers (description)
-[ ] Async -> Parallelization
-[ ] Grid
+[ ] Independent API (nearest, nearest visible, etc)
 [ ] Cubes
-[ ] Repeated code in binding.cpp
-[ ] Performance tests (https://www.npmjs.com/package/loadtest)
-[ ] Separate input/internal error msgs (400 from 500)
-[ ] Dox: cpp implies everything 100% correct
-[ ] Config file
-[ ] Logging
-[ ] Time-stamping
-[ ] Return object in msg when invalid
-[ ] Max points length per req
+[ ] VisibilityHelper and Plane/CameraInfo redundant
 [ ] In code TODOs
-[ ] Lots of error checking
-[ ] Fix speed vs velocity
-[ ] Option to locally load points
-[ ] Count which objs (e.g. spheres) are correctly inserted, and give feedback
+[ ] Repeated code in binding.cpp
+[ ] Max speed config
+
 [ ] 80 col
-[ ] Test nearest sphere in velocity endpoint
 [ ] Add point array to avoid re-building the kd-tree
+[ ] Async -> Parallelization
+[ ] Check is_vec3 and others in rmns.js
 [ ] check method case-conventions (oneTwo != one_two)
-[ ] Valgrind
+[ ] Code headers (description)
+[ ] Count which objs (e.g. spheres) are correctly inserted, and give feedback
 [ ] Coveralls
+[ ] Dox: cpp implies everything 100% correct
+[ ] Fix speed vs velocity
+[ ] Logging
+[ ] Lots of error checking
+[ ] Max points length per req
+[ ] Number of spheres performance test
+[ ] Open source license
+[ ] Option to locally load points
+[ ] Performance tests (https://www.npmjs.com/package/loadtest)
+[ ] Return object in msg when invalid
+[ ] Separate input/internal error msgs (400 from 500)
+[ ] Syntastic Js
+[ ] Test nearest sphere in velocity endpoint
+[ ] Valgrind
+[x] Config file
+[x] Grid
+[x] Time-stamping
 [x] Travis CI
 [x] Nearest visible point
 [x] Route tests
@@ -38,9 +45,9 @@
 
 [ ] Code headers
 [ ] Better file loading convention, last blank line is ugly
-[ ] Planet labels with distance
 [ ] Sub space inside planet atmospheres
 [ ] Mini map
+[x] Planet labels with distance
 [x] Invert Y/Z option
 [x] Asteroid belt as point cloud
 [x] Create HTTP module for all server communication
