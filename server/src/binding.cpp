@@ -277,11 +277,6 @@ void nearest_vobject(const FunctionCallbackInfo<Value>& args) {
     float znear         = args[5]->NumberValue();
     float zfar          = args[6]->NumberValue();
 
-    //Local<Object> posObj = args[0]->ToObject();
-    //double x = posObj->Get(String::NewFromUtf8(isolate, "x"))->NumberValue();
-    //double y = posObj->Get(String::NewFromUtf8(isolate, "y"))->NumberValue();
-    //double z = posObj->Get(String::NewFromUtf8(isolate, "z"))->NumberValue();
-
     CameraInfo* camera = new CameraInfo(eye, center, up,
                                         fovy, aspect, znear, zfar);
     double distance;

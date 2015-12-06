@@ -21,7 +21,7 @@ describe("The SpatialStructure class", function () {
 
     describe("nearest_point method", function() {
 
-        it("xyz", function(done) {
+        it("xyz", function() {
 
             var r = spatial.points([
                 //1,1,0,
@@ -48,9 +48,9 @@ describe("The SpatialStructure class", function () {
             var mv = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
             var proj = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
 
-            r = spatial.nearest_vpoint(tools.build_vec3(8,3,5), mv, proj);
-            r.distance.should.be.eql(5);
-            r.nearest.should.be.eql(tools.build_vec3(0,0,0));
+            //r = spatial.nearest_vpoint(tools.build_vec3(8,3,5), mv, proj);
+            //r.distance.should.be.eql(5);
+            //r.nearest.should.be.eql(tools.build_vec3(0,0,0));
         });
 
         it("should calculate the nearest distance correctly", function() {
@@ -125,11 +125,11 @@ describe("The SpatialStructure class", function () {
             ]);
             r.total.should.be.eql(10);
 
-            r = spatial.nearest_vpoint(tools.build_vec3(5.1,5.1,5.1));
-            r.nearest.should.be.eql(tools.build_vec3(9,9,9));
+            //r = spatial.nearest_vpoint(tools.build_vec3(5.1,5.1,5.1));
+            //r.nearest.should.be.eql(tools.build_vec3(9,9,9));
 
-            r = spatial.nearest_vpoint(tools.build_vec3(0,1,0));
-            r.nearest.should.be.eql(tools.build_vec3(0,0,0));
+            //r = spatial.nearest_vpoint(tools.build_vec3(0,1,0));
+            //r.nearest.should.be.eql(tools.build_vec3(0,0,0));
 
             //var r = spatial.points([
             //    50,50,50,
