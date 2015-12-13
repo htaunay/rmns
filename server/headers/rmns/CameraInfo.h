@@ -24,6 +24,7 @@ class CameraInfo
                    float zfar);
 
         glm::vec3 get_eye();
+        void set_fovy(float fovy);
 
         glm::mat4 view_matrix();
         glm::mat4 projection_matrix();
@@ -43,7 +44,7 @@ class CameraInfo
         glm::vec3 center;
         glm::vec3 up;
 
-        float fovy;
+        float _fovy;
         float aspect;
         float znear;
         float zfar;

@@ -14,7 +14,7 @@ CameraInfo::CameraInfo(glm::vec3 eye,
     this->eye    = eye;
     this->center = center;
     this->up     = up;
-    this->fovy   = fovy * 1.0f * (3.14159265f/180.0f);
+    _fovy   = fovy * (3.14159265f/180.0f);
     this->aspect = aspect;
     this->znear  = znear;
     this->zfar   = zfar;
@@ -23,6 +23,11 @@ CameraInfo::CameraInfo(glm::vec3 eye,
 glm::vec3 CameraInfo::get_eye()
 {
     return eye;
+}
+
+void CameraInfo::set_fovy(float fovy)
+{
+   _fovy = fovy;
 }
 
 glm::mat4 CameraInfo::view_matrix()
@@ -53,7 +58,7 @@ glm::mat4 CameraInfo::view_matrix()
 glm::mat4 CameraInfo::projection_matrix()
 {
     if(is_identity(proj_mat4))
-        proj_mat4 = glm::perspective(fovy, aspect, znear, zfar);
+        proj_mat4 = glm::perspective(_fovy, aspect, znear, zfar);
 
     // TODO add right hand config (directx) fix
     if(true)
@@ -74,7 +79,7 @@ bool CameraInfo::sphere_inside_frustum(Sphere* sphere)
 {
     if(_planes.empty())
         build_planes();
- 
+
     float distance;
     for(unsigned int i = 0; i < _planes.size(); i++)
     {
@@ -117,10 +122,10 @@ void CameraInfo::build_planes()
     //printf("X = %f\t%f\t%f\n", xaxis.x, xaxis.y, xaxis.z);
     //printf("Y = %f\t%f\t%f\n\n", yaxis.x, yaxis.y, yaxis.z);
 
-    float near_height = 2.0f * tan(fovy/2.0f) * znear;
+    float near_height = 2.0f * tan(_fovy/2.0f) * znear;
     float near_width  = near_height * aspect;
 
-    float far_height = 2.0f * tan(fovy/2.0f) * zfar;
+    float far_height = 2.0f * tan(_fovy/2.0f) * zfar;
     float far_width  = far_height * aspect;
 
     //printf("NEAR ZNEAR = %f\tHEIGHT = %f\tWIDTH = %f\n", znear, near_height, near_width);

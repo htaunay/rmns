@@ -35,10 +35,12 @@ glm::vec3 Vec3FromJsonObj(Local<Object> obj, Isolate* isolate)
     return glm::vec3(x,y,z);
 }
 
-// ********** Binding Methods ********** //
-
+// ********** Variables ********** //
 
 SpatialStructure* spatialStructure = new SpatialStructure();
+float visibleFovy = 0;
+
+// ********** Binding Methods ********** //
 
 void setup_config(const FunctionCallbackInfo<Value>& args)
 {
@@ -55,6 +57,9 @@ void setup_config(const FunctionCallbackInfo<Value>& args)
         std::string key = std::string(*keyUtf8);
 
         Local<Value> value = config_obj->Get(keyValue->ToString());
+
+        if(key.compare("visible_fovy") == 0)
+            visibleFovy = (float) value->NumberValue();
 
         if(key.compare("activate_grid") == 0)
             spatialStructure->activateGrid(value->BooleanValue());
