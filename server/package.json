@@ -23,5 +23,8 @@
     "request": "^2.65.0",
     "should": "^7.1.1",
     "should-http": "0.0.4"
+  },
+  "dependencies": {
+    "math": "0.0.3"
   }
 }

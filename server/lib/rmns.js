@@ -1,10 +1,11 @@
+var math = require("math");
 var spatial = require("../build/Release/binding");
 var config = require("../config/config.json");
 spatial.setup_config(config);
 
 var rmns = {};
 
-/* ================ HELPER METHODS =============== */
+/* ================ PRIVATE METHODS =============== */
 
 var is_num = function(num) {
     return typeof num === "number";
@@ -27,26 +28,88 @@ var is_vec3 = function(vec3) {
     return true;
 };
 
+var sub_vec3 = function(v1, v2) {
+
+    var vec = {};
+    vec.x = v1.x - v2.x;
+    vec.y = v1.y - v2.y;
+    vec.z = v1.z - v2.z;
+
+    return vec;
+};
+
+var normalize_vec3 = function(vec) {
+
+    var length = math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+    length += 0.001; // Avoid division by zero
+
+    var nvec = {};
+    nvec.x = vec.x / length;
+    nvec.y = vec.y / length;
+    nvec.z = vec.z / length;
+
+    return nvec;
+};
+
 var is_nearest_result_valid = function(result) {
+
+    if(!result.found)
+        return true;
 
     if(!("distance" in result) ||
         !is_num(result.distance) ||
         result.distance < 0)
-        return false; 
+        return false;
 
     if(!("nearest" in result) ||
         !("x" in result.nearest) ||
         !("y" in result.nearest) ||
         !("z" in result.nearest))
-        return false; 
+        return false;
 
     if(!is_num(result.nearest.x) ||
         !is_num(result.nearest.y) ||
         !is_num(result.nearest.z))
-        return false; 
+        return false;
 
     return true;
 };
+
+var calc_heuristic = function(eye, nearest, vnearest, distance) {
+
+    var result;
+    if(vnearest != null) {
+
+        var nearest_vec  = sub_vec3(nearest,  eye);
+        var vnearest_vec = sub_vec3(vnearest, eye);
+
+        nearest_vec  = normalize_vec3(nearest_vec);
+        vnearest_vec = normalize_vec3(vnearest_vec);
+
+        var cos_similarity = nearest_vec.x * vnearest_vec.x +
+                             nearest_vec.y * vnearest_vec.y +
+                             nearest_vec.z * vnearest_vec.z;
+
+        var multiplier = 1.0 + ((1.0 - cos_similarity) / 2.0);
+
+        var velocity = distance * multiplier;
+
+        result = {
+            "velocity": velocity,
+            "multiplier": multiplier,
+            "cos_similarity": cos_similarity
+        };
+    }
+    else {
+        result = {
+            "velocity": distance,
+            "multiplier": 1.0,
+            "cos_similarity": 1.0
+        };
+    }
+
+    return result;
+}
 
 /* ================ SERVER MESSAGES =============== */
 
@@ -106,16 +169,20 @@ rmns.SPHERES_ERROR = function() {
     return {"code": 400, "msg": "Invalid argument type or size"};
 };
 
-rmns.VELOCITY_OK = function(velocity, nearest, points) {
+rmns.VELOCITY_OK = function(
+        heuristic_result, distance, nearest, vnearest, times) {
 
     return {
         "code": 200,
         "msg": "Velocity calculated with success",
         "result": {
-            "velocity": velocity,
-            "nearest": nearest,
-            // TODO DEBUG
-            "points": points
+            "distance":             distance,
+            "velocity":             heuristic_result.velocity,
+            "nearest":              nearest,
+            "vnearest":             vnearest,
+            "cos_similarity":       heuristic_result.cos_similarity,
+            "multiplier":           heuristic_result.multiplier,
+            "times":                times
         }
     };
 };
@@ -254,33 +321,94 @@ rmns.calc_velocity = function(data) {
        !is_pos_num(zfar) || znear >= zfar)
         return this.VELOCITY_ERROR();
 
-    var point_result = spatial.nearest_vpoint(eye, center, up, fovy,
-                                              aspect, znear, zfar);
+    var times = {};
+    var start = Date.now();
+    var now = null;
 
+    now = Date.now();
+    var point_result = spatial.nearest_point(eye);
+    times.point = Date.now() - now;
     if(!is_nearest_result_valid(point_result))
         return this.VELOCITY_ERROR();
 
-    //var visible_result = spatial.nearest_vpoint(pos);
-    //if(!is_nearest_result_valid(visible_result))
-    //    return this.VELOCITY_ERROR();
-
-    var obj_result = spatial.nearest_vobject(eye, center, up, fovy,
+    now = Date.now();
+    var vpoint_result = spatial.nearest_vpoint(eye, center, up, fovy,
                                               aspect, znear, zfar);
+    times.vpoint = Date.now() - now;
+    if(!is_nearest_result_valid(vpoint_result))
+        return this.VELOCITY_ERROR();
+
+    now = Date.now();
+    var obj_result = spatial.nearest_object(eye);
+    times.obj = Date.now() - now;
     if(!is_nearest_result_valid(obj_result))
         return this.VELOCITY_ERROR();
 
-    if(point_result.distance < obj_result.distance)
-        return this.VELOCITY_OK(point_result.distance, point_result.nearest, obj_result.points);
-    else
-        return this.VELOCITY_OK(obj_result.distance, obj_result.nearest, obj_result.points);
+    now = Date.now();
+    var vobj_result = spatial.nearest_vobject(eye, center, up, fovy,
+                                              aspect, znear, zfar);
+    times.vobj = Date.now() - now;
+    if(!is_nearest_result_valid(vobj_result))
+        return this.VELOCITY_ERROR();
 
-    //if(point_result.distance < obj_result.distance &&
-    //   point_result.distance < visible_result.distance)
-    //    return this.VELOCITY_OK(point_result.distance, point_result.nearest);
-    //else if(visible_result.distance < obj_result.distance)
-    //    return this.VELOCITY_OK(visible_result.distance, visible_result.nearest);
-    //else
-    //    return this.VELOCITY_OK(obj_result.distance, obj_result.nearest);
+    var nearest = null;
+    var distance = -1;
+    if
+    (
+        (point_result.found && !obj_result.found) ||
+        (
+            point_result.found && obj_result.found &&
+            point_result.distance < obj_result.distance
+        )
+    )
+    {
+        nearest  = point_result.nearest;
+        distance = point_result.distance;
+    }
+    else if
+    (
+        (!point_result.found && obj_result.found) ||
+        (
+            point_result.found && obj_result.found &&
+            point_result.distance > obj_result.distance
+        )
+    )
+    {
+        nearest  = obj_result.nearest;
+        distance = obj_result.distance;
+    }
+
+    var vnearest = null;
+    if
+    (
+        (vpoint_result.found && !vobj_result.found) ||
+        (
+            vpoint_result.found && vobj_result.found &&
+            vpoint_result.distance < vobj_result.distance
+        )
+    )
+    {
+        vnearest = vpoint_result.nearest;
+    }
+    else if
+    (
+        (!vpoint_result.found && vobj_result.found) ||
+        (
+            vpoint_result.found && vobj_result.found &&
+            vpoint_result.distance > vobj_result.distance
+        )
+    )
+    {
+        vnearest  = vobj_result.nearest;
+    }
+
+    now = Date.now();
+    var heuristic_result = calc_heuristic(eye, nearest, vnearest, distance);
+    times.heuristic = Date.now() - now;
+
+    times.velocity = Date.now() - start;
+    return this.VELOCITY_OK(
+            heuristic_result, distance, nearest, vnearest, times);
 };
 
 module.exports = rmns;

@@ -88,7 +88,7 @@ void stats(const FunctionCallbackInfo<Value>& args) {
 /*!
  * This method must receive an v8 number array, with a length multiple
  * of three, and returns the total points already registered..
- * Any other input may not result in expected behaviour. 
+ * Any other input may not result in expected behaviour.
  */
 void points(const FunctionCallbackInfo<Value>& args) {
 
@@ -118,12 +118,12 @@ void spheres(const FunctionCallbackInfo<Value>& args) {
 
     Local<Object> output = Object::New(isolate);
 
-    Local<String> xStr = String::NewFromUtf8(isolate, "x"); 
-    Local<String> yStr = String::NewFromUtf8(isolate, "y"); 
-    Local<String> zStr = String::NewFromUtf8(isolate, "z"); 
+    Local<String> xStr = String::NewFromUtf8(isolate, "x");
+    Local<String> yStr = String::NewFromUtf8(isolate, "y");
+    Local<String> zStr = String::NewFromUtf8(isolate, "z");
     Local<String> idStr = String::NewFromUtf8(isolate, "id");
-    Local<String> centerStr = String::NewFromUtf8(isolate, "center"); 
-    Local<String> radiusStr = String::NewFromUtf8(isolate, "radius"); 
+    Local<String> centerStr = String::NewFromUtf8(isolate, "center");
+    Local<String> radiusStr = String::NewFromUtf8(isolate, "radius");
 
     int length = GetArrayLength(args);
     Local<Object> array = args[0]->ToObject();
@@ -173,19 +173,25 @@ void nearest_point(const FunctionCallbackInfo<Value>& args) {
     double distance;
     glm::vec3 nearest;
     glm::vec3 pos(x,y,z);
-    spatialStructure->nearest_point(pos, nearest, distance);
+    bool found = spatialStructure->nearest_point(pos, nearest, distance);
 
-    output->Set(String::NewFromUtf8(isolate, "distance"),
-           Number::New(isolate, distance)); 
+    output->Set(String::NewFromUtf8(isolate, "found"),
+           Boolean::New(isolate, found));
 
-    Local<Object> nearestObj = Object::New(isolate);
-    nearestObj->Set(String::NewFromUtf8(isolate, "x"),
-           Number::New(isolate, nearest.x));
-    nearestObj->Set(String::NewFromUtf8(isolate, "y"),
-           Number::New(isolate, nearest.y));
-    nearestObj->Set(String::NewFromUtf8(isolate, "z"),
-           Number::New(isolate, nearest.z));
-    output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
+    if(found)
+    {
+        output->Set(String::NewFromUtf8(isolate, "distance"),
+               Number::New(isolate, distance));
+
+        Local<Object> nearestObj = Object::New(isolate);
+        nearestObj->Set(String::NewFromUtf8(isolate, "x"),
+               Number::New(isolate, nearest.x));
+        nearestObj->Set(String::NewFromUtf8(isolate, "y"),
+               Number::New(isolate, nearest.y));
+        nearestObj->Set(String::NewFromUtf8(isolate, "z"),
+               Number::New(isolate, nearest.z));
+        output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
+    }
 
     args.GetReturnValue().Set(output);
 }
@@ -202,34 +208,33 @@ void nearest_vpoint(const FunctionCallbackInfo<Value>& args) {
     float aspect        = args[4]->NumberValue();
     float znear         = args[5]->NumberValue();
     float zfar          = args[6]->NumberValue();
-    
-    //Local<Object> mvObj = args[1]->ToObject();
-    //std::vector<double> mvArray;
-    //for(int i = 0; i < 16; i++)
-    //    mvArray.push_back(mvObj->Get(i)->NumberValue());
 
-    //Local<Object> projObj = args[2]->ToObject();
-    //std::vector<double> projArray;
-    //for(int i = 0; i < 16; i++)
-    //    projArray.push_back(projObj->Get(i)->NumberValue());
+    if(visibleFovy)
+        fovy *= visibleFovy;
 
     CameraInfo* camera = new CameraInfo(eye, center, up,
                                         fovy, aspect, znear, zfar);
     double distance;
     glm::vec3 nearest;
-    spatialStructure->nearest_vpoint(camera, nearest, distance);
+    bool found = spatialStructure->nearest_vpoint(camera, nearest, distance);
 
-    output->Set(String::NewFromUtf8(isolate, "distance"),
-           Number::New(isolate, distance)); 
+    output->Set(String::NewFromUtf8(isolate, "found"),
+           Boolean::New(isolate, found));
 
-    Local<Object> nearestObj = Object::New(isolate);
-    nearestObj->Set(String::NewFromUtf8(isolate, "x"),
-           Number::New(isolate, nearest.x));
-    nearestObj->Set(String::NewFromUtf8(isolate, "y"),
-           Number::New(isolate, nearest.y));
-    nearestObj->Set(String::NewFromUtf8(isolate, "z"),
-           Number::New(isolate, nearest.z));
-    output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
+    if(found)
+    {
+        output->Set(String::NewFromUtf8(isolate, "distance"),
+               Number::New(isolate, distance));
+
+        Local<Object> nearestObj = Object::New(isolate);
+        nearestObj->Set(String::NewFromUtf8(isolate, "x"),
+               Number::New(isolate, nearest.x));
+        nearestObj->Set(String::NewFromUtf8(isolate, "y"),
+               Number::New(isolate, nearest.y));
+        nearestObj->Set(String::NewFromUtf8(isolate, "z"),
+               Number::New(isolate, nearest.z));
+        output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
+    }
 
     args.GetReturnValue().Set(output);
 }
@@ -247,19 +252,25 @@ void nearest_object(const FunctionCallbackInfo<Value>& args) {
     double distance;
     glm::vec3 nearest;
     glm::vec3 pos(x,y,z);
-    spatialStructure->nearest_object(pos, nearest, distance);
+    bool found = spatialStructure->nearest_object(pos, nearest, distance);
 
-    output->Set(String::NewFromUtf8(isolate, "distance"),
-           Number::New(isolate, distance)); 
+    output->Set(String::NewFromUtf8(isolate, "found"),
+           Boolean::New(isolate, found));
 
-    Local<Object> nearestObj = Object::New(isolate);
-    nearestObj->Set(String::NewFromUtf8(isolate, "x"),
-           Number::New(isolate, nearest.x));
-    nearestObj->Set(String::NewFromUtf8(isolate, "y"),
-           Number::New(isolate, nearest.y));
-    nearestObj->Set(String::NewFromUtf8(isolate, "z"),
-           Number::New(isolate, nearest.z));
-    output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
+    if(found)
+    {
+        output->Set(String::NewFromUtf8(isolate, "distance"),
+               Number::New(isolate, distance));
+
+        Local<Object> nearestObj = Object::New(isolate);
+        nearestObj->Set(String::NewFromUtf8(isolate, "x"),
+               Number::New(isolate, nearest.x));
+        nearestObj->Set(String::NewFromUtf8(isolate, "y"),
+               Number::New(isolate, nearest.y));
+        nearestObj->Set(String::NewFromUtf8(isolate, "z"),
+               Number::New(isolate, nearest.z));
+        output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
+    }
 
     args.GetReturnValue().Set(output);
 }
@@ -277,42 +288,53 @@ void nearest_vobject(const FunctionCallbackInfo<Value>& args) {
     float znear         = args[5]->NumberValue();
     float zfar          = args[6]->NumberValue();
 
+    if(visibleFovy)
+        fovy *= visibleFovy;
+
     CameraInfo* camera = new CameraInfo(eye, center, up,
                                         fovy, aspect, znear, zfar);
     double distance;
     glm::vec3 nearest;
     std::vector<glm::vec3> points;
-    spatialStructure->nearest_vobject(camera, nearest, distance, points);
+    bool found = spatialStructure->nearest_vobject(camera, nearest, distance, points);
 
-    output->Set(String::NewFromUtf8(isolate, "distance"),
-           Number::New(isolate, distance)); 
+    output->Set(String::NewFromUtf8(isolate, "found"),
+           Boolean::New(isolate, found));
 
-    Local<Array> pointsObj = Array::New(isolate, 8);
-    for(int i = 0; i < 8; i++)
+    if(found)
     {
-        Local<Object> point = Object::New(isolate);
-        point->Set(String::NewFromUtf8(isolate, "x"),
-               Number::New(isolate, points[i].x));
-        point->Set(String::NewFromUtf8(isolate, "y"),
-               Number::New(isolate, points[i].y));
-        point->Set(String::NewFromUtf8(isolate, "z"),
-               Number::New(isolate, points[i].z));
+        output->Set(String::NewFromUtf8(isolate, "distance"),
+               Number::New(isolate, distance));
 
-        pointsObj->Set(i, point);
+        Local<Array> pointsObj = Array::New(isolate, 8);
+        for(int i = 0; i < 8; i++)
+        {
+            Local<Object> point = Object::New(isolate);
+            point->Set(String::NewFromUtf8(isolate, "x"),
+                   Number::New(isolate, points[i].x));
+            point->Set(String::NewFromUtf8(isolate, "y"),
+                   Number::New(isolate, points[i].y));
+            point->Set(String::NewFromUtf8(isolate, "z"),
+                   Number::New(isolate, points[i].z));
+
+            pointsObj->Set(i, point);
+        }
+        output->Set(String::NewFromUtf8(isolate, "points"), pointsObj);
+
+        Local<Object> nearestObj = Object::New(isolate);
+        nearestObj->Set(String::NewFromUtf8(isolate, "x"),
+               Number::New(isolate, nearest.x));
+        nearestObj->Set(String::NewFromUtf8(isolate, "y"),
+               Number::New(isolate, nearest.y));
+        nearestObj->Set(String::NewFromUtf8(isolate, "z"),
+               Number::New(isolate, nearest.z));
+        output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
     }
-    output->Set(String::NewFromUtf8(isolate, "points"), pointsObj); 
-
-    Local<Object> nearestObj = Object::New(isolate);
-    nearestObj->Set(String::NewFromUtf8(isolate, "x"),
-           Number::New(isolate, nearest.x));
-    nearestObj->Set(String::NewFromUtf8(isolate, "y"),
-           Number::New(isolate, nearest.y));
-    nearestObj->Set(String::NewFromUtf8(isolate, "z"),
-           Number::New(isolate, nearest.z));
-    output->Set(String::NewFromUtf8(isolate, "nearest"), nearestObj);
 
     args.GetReturnValue().Set(output);
 }
+
+// ********** Binding Configuration ********** //
 
 void init(Handle<Object> target) {
     NODE_SET_METHOD(target, "setup_config",     setup_config);

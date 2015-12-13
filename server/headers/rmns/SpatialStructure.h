@@ -28,19 +28,19 @@ class SpatialStructure
         bool add_points(std::vector<glm::vec3> points);
         bool update_sphere(int id, glm::vec3 center, double radius);
 
-        void nearest_point(glm::vec3 pos,
+        bool nearest_point(glm::vec3 pos,
                            glm::vec3& nearest,
                            double& distance);
 
-        void nearest_vpoint(CameraInfo* camera,
+        bool nearest_vpoint(CameraInfo* camera,
                             glm::vec3& nearest,
                             double& distance);
 
-        void nearest_object(glm::vec3 pos,
+        bool nearest_object(glm::vec3 pos,
                             glm::vec3& nearest,
                             double& distance);
 
-        void nearest_vobject(CameraInfo* camera,
+        bool nearest_vobject(CameraInfo* camera,
                              glm::vec3& nearest,
                              double& distance,
                              std::vector<glm::vec3>& points);
@@ -58,11 +58,11 @@ class SpatialStructure
             }
         };
 
-        void nearest_sphere(glm::vec3 pos,
+        bool nearest_sphere(glm::vec3 pos,
                             glm::vec3& nearest,
                             double& distance);
 
-        void nearest_vsphere(CameraInfo* camera,
+        bool nearest_vsphere(CameraInfo* camera,
                              glm::vec3& nearest,
                              double& distance,
                              std::vector<glm::vec3>& points);
