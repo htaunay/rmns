@@ -3,8 +3,6 @@ using System.Collections;
 
 public class FlyNavigator : MonoBehaviour
 {
-	private Transform sphere;
-
 	[SerializeField]
 	public bool Activate = false;
 
@@ -14,15 +12,11 @@ public class FlyNavigator : MonoBehaviour
 	[SerializeField]
 	private float rotationSpeed = 50;
 
-	private void Start()
-	{
-		GameObject go = GameObject.Find("Nearest");
-		if(go) sphere = go.transform;
-	}
-
 	private void OnGUI ()
 	{
 		transform.eulerAngles += GetRotation();
+		transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0.0f);
+
 		transform.Translate(GetTranslation());
 	}
 
@@ -33,7 +27,7 @@ public class FlyNavigator : MonoBehaviour
 		rotation += Vector3.up * Input.GetAxis("Mouse X");
 		rotation += Vector3.left * Input.GetAxis("Mouse Y");
 
-		return rotation * rotationSpeed * Time.deltaTime;
+		return rotation * rotationSpeed * Mathf.Clamp(Time.deltaTime, 0.0f, 20.0f);
 	}
 	
 	private Vector3 GetTranslation()
@@ -65,6 +59,6 @@ public class FlyNavigator : MonoBehaviour
 	private void FixedUpdate()
 	{
 		if(Activate)
-			Server.Instance.UpdateTranslationSpeed(transform.position, this, sphere);
+			Server.Instance.UpdateTranslationSpeed(transform.position, this);
 	}
 }

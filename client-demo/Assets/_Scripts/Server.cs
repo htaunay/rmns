@@ -5,7 +5,12 @@ using System.Collections;
 public class Server : MonoBehaviour {
 
 	// TODO DEBUG
+	public GameObject nearest;
+	public GameObject vnearest;
 	public GameObject[] points;
+
+	private JSONObject result;
+	private bool waitingForResponse = false;
 
 	#region Singleton
 	
@@ -42,6 +47,26 @@ public class Server : MonoBehaviour {
 				// TODO
 			}
 		});
+	}
+
+	private void OnGUI()
+	{
+		if(!result) return;
+
+		string distance 		= result.GetField("distance").ToString();
+		string velocity 		= result.GetField("velocity").ToString();
+		string cos_similarity 	= result.GetField("cos_similarity").ToString();
+		string multiplier 		= result.GetField("multiplier").ToString();
+		string times 			= result.GetField("times").ToString();
+
+		string log =
+			"Distance: " + distance + "\n" + 
+			"Velocity: " + velocity + "\n" + 
+			"Cos Similarity: " + cos_similarity + "\n" + 
+			"Multiplier: " + multiplier + "\n" + 
+			"Times: " + times; 
+
+		GUI.Label(new Rect(20, 20, 500, 100), log);
 	}
 
 	public bool IsInitialized()
@@ -98,8 +123,11 @@ public class Server : MonoBehaviour {
 		flow += "]";
 	}
 
-	public void UpdateTranslationSpeed(Vector3 pos, FlyNavigator navigator, Transform marker = null)
+	public void UpdateTranslationSpeed(Vector3 pos, FlyNavigator navigator)
 	{
+		if(waitingForResponse)
+			return;
+
 		Hashtable json = new Hashtable();
 
 		Transform cameraTransform = Camera.main.transform;
@@ -128,28 +156,54 @@ public class Server : MonoBehaviour {
 		//json.Add("proj", proj);
 
 		HTTP.Request request = new HTTP.Request( "post", url + "/velocity", json );
+		waitingForResponse = true;
+
 		request.Send( ( req ) => {
 
-			// TODO LOGGER
-			Debug.Log (req.responseTime);
+			waitingForResponse = false;
+
+			// TODO LOGGER Debug.Log (req.response.Text);
 			JSONObject responseObj = new JSONObject( req.response.Text );
 			double timestamp = responseObj.GetField("timestamp").n;
 
 			if(timestamp <= lastTimestamp) return;
 			else lastTimestamp = timestamp;
 
-			JSONObject result = responseObj.GetField("result");
+			result = responseObj.GetField("result");
 			float speed = float.Parse(result.GetField("velocity").ToString());
 
 			navigator.SetTranslationSpeed(Mathf.Max(speed / /*TODO remove*/5.0f, 0.1f));
 
-			if(marker)
+			if(nearest)
 			{
-				JSONObject nearest = result.GetField("nearest");
-				float x = float.Parse(nearest.GetField("x").ToString());
-				float y = float.Parse(nearest.GetField("y").ToString());
-				float z = float.Parse(nearest.GetField("z").ToString());
-				marker.position = new Vector3(x,y,z);
+				JSONObject nearestObj = result.GetField("nearest");
+				if(!nearestObj.IsNull)
+				{
+					float x = float.Parse(nearestObj.GetField("x").ToString());
+					float y = float.Parse(nearestObj.GetField("y").ToString());
+					float z = float.Parse(nearestObj.GetField("z").ToString());
+					nearest.transform.position = new Vector3(x,y,z);
+				}
+				else
+				{
+					nearest.transform.position = Vector3.zero;
+				}
+			}
+			
+			if(vnearest)
+			{
+				JSONObject vnearestObj = result.GetField("vnearest");
+				if(!vnearestObj.IsNull)
+				{
+					float x = float.Parse(vnearestObj.GetField("x").ToString());
+					float y = float.Parse(vnearestObj.GetField("y").ToString());
+					float z = float.Parse(vnearestObj.GetField("z").ToString());
+					vnearest.transform.position = new Vector3(x,y,z);
+				}
+				else
+				{
+					vnearest.transform.position = Vector3.zero;
+				}
 			}
 
 //			JSONObject pointsObj = obj.GetField("points");
