@@ -345,7 +345,6 @@ void init(Handle<Object> target) {
     NODE_SET_METHOD(target, "setup_config",     setup_config);
     NODE_SET_METHOD(target, "stats",            stats);
     NODE_SET_METHOD(target, "points",           points);
-    //NODE_SET_METHOD(target, "cubes",    cubes);
     NODE_SET_METHOD(target, "spheres",          spheres);
     NODE_SET_METHOD(target, "reset",            reset);
     NODE_SET_METHOD(target, "nearest_point",    nearest_point);

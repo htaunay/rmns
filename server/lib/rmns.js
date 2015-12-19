@@ -5,7 +5,9 @@ spatial.setup_config(config);
 
 var rmns = {};
 
-/* ================ PRIVATE METHODS =============== */
+/* ========================================================================= */
+/* ============================ PRIVATE METHODS ============================ */
+/* ========================================================================= */
 
 var is_num = function(num) {
     return typeof num === "number";
@@ -111,7 +113,9 @@ var calc_heuristic = function(eye, nearest, vnearest, distance) {
     return result;
 }
 
-/* ================ SERVER MESSAGES =============== */
+/* ========================================================================= */
+/* ============================ SERVER MESSAGES ============================ */
+/* ========================================================================= */
 
 rmns.RESET_OK = function() {
 
@@ -200,7 +204,9 @@ rmns.NOT_FOUND = function() {
     };
 };
 
-/* ================ SERVER METHODS =============== */
+/* ========================================================================= */
+/* ============================= SERVER METHODS ============================ */
+/* ========================================================================= */
 
 rmns.get_stats = function() {
 
@@ -408,7 +414,8 @@ rmns.calc_velocity = function(data) {
 
     times.velocity = Date.now() - start;
     return this.VELOCITY_OK(
-            heuristic_result, distance, nearest, vnearest, times);
+        heuristic_result, distance, nearest, vnearest, times
+    );
 };
 
 module.exports = rmns;

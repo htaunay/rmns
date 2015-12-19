@@ -14,11 +14,6 @@ var router = function(url, data, cb) {
             cb(rmns.register_points(data));
             break;
 
-        //case "/cubes":
-        //    cb(binding.points(JSON.parse(data)));
-        //    console.log("Calling cubes endpoint");
-        //    break;
-
         case "/spheres":
             cb(rmns.register_spheres(data));
             break;
