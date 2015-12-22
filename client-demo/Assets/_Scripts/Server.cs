@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
+using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Server : MonoBehaviour {
 
@@ -11,6 +13,8 @@ public class Server : MonoBehaviour {
 
 	private JSONObject result;
 	private bool waitingForResponse = false;
+
+	private Dictionary<int, SphereInfo> spheres = new Dictionary<int, SphereInfo>();
 
 	#region Singleton
 	
@@ -51,7 +55,7 @@ public class Server : MonoBehaviour {
 
 	private void OnGUI()
 	{
-		if(!result) return;
+		/*if(!result) return;
 
 		string distance 		= result.GetField("distance").ToString();
 		string velocity 		= result.GetField("velocity").ToString();
@@ -66,7 +70,12 @@ public class Server : MonoBehaviour {
 			"Multiplier: " + multiplier + "\n" + 
 			"Times: " + times; 
 
-		GUI.Label(new Rect(20, 20, 500, 100), log);
+		GUI.Label(new Rect(20, 20, 500, 100), log);*/
+	}
+
+	private void FixedUpdate()
+	{
+		UpdateSpheres();
 	}
 
 	public bool IsInitialized()
@@ -74,23 +83,9 @@ public class Server : MonoBehaviour {
 		return initialized;
 	}
 
-	public void RegisterSphere(int id, Vector3 center, float radius)
+	public void RegisterSphere(SphereInfo sphere)
 	{
-		string inputStr = "[{\"id\":" + id + ", " + 
-			"\"center\": {" + 
-			"\"x\":" + center.x + ", " + 
-			"\"y\":" + center.y + ", " +
-			"\"z\":" + center.z + "}, " +
-			"\"radius\":" + radius + "}]";
-
-		// LOGGER Debug.Log (inputStr);
-
-		byte[] input = Encoding.UTF8.GetBytes(inputStr);
-		HTTP.Request request = new HTTP.Request( "post", url + "/spheres", input );
-		request.AddHeader("Content-Type", "application/json");
-		request.Send( ( req ) => {
-			// LOGGER Debug.Log( req.response.Text );
-		});
+		spheres[sphere.id] = sphere;
 	}
 
 	public void RegisterPoints(Vector3[] points)
@@ -215,6 +210,45 @@ public class Server : MonoBehaviour {
 //				float z = float.Parse(pointObj.GetField("z").ToString());
 //				points[i].transform.position = new Vector3(x,y,z);
 //			}
+		});
+	}
+
+	private void UpdateSpheres()
+	{
+		/*string inputStr = "[{\"id\":" + id + ", " +
+			"\"center\": {" +
+			"\"x\":" + center.x + ", " +
+			"\"y\":" + center.y + ", " +
+			"\"z\":" + center.z + "}, " +
+			"\"radius\":" + radius + "}]";*/
+
+		bool first = true;
+		string inputStr = "[";
+
+		foreach(KeyValuePair<int, SphereInfo> pair in spheres)
+		{
+			if(first) first = false;
+			else inputStr += ",";
+
+			SphereInfo sphere = pair.Value;
+			inputStr += "{\"id\":" + sphere.id + ", " +
+						"\"center\": {" +
+						"\"x\":" + sphere.pos.x + ", " +
+						"\"y\":" + sphere.pos.y + ", " +
+						"\"z\":" + sphere.pos.z + "}, " +
+						"\"radius\":" + sphere.radius + "}";
+		}
+
+		inputStr += "]";
+
+		// LOGGER Debug.Log (inputStr);
+
+
+		byte[] input = Encoding.UTF8.GetBytes(inputStr);
+		HTTP.Request request = new HTTP.Request( "post", url + "/spheres", input );
+		request.AddHeader("Content-Type", "application/json");
+		request.Send( ( req ) => {
+			// LOGGER Debug.Log( req.response.Text );
 		});
 	}
 

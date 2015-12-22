@@ -1,8 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\ThirdParty\JSON\JSONObject.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Scripts\Server.cs">
     <Files>
-      <File FileName="Assets\ThirdParty\JSON\JSONObject.cs" Line="377" Column="57" />
+      <File FileName="Assets\ThirdParty\JSON\JSONObject.cs" Line="1017" Column="2" />
+      <File FileName="Assets\_Scripts\Marker.cs" Line="18" Column="1" />
+      <File FileName="Assets\_Scripts\Planet.cs" Line="78" Column="1" />
+      <File FileName="Assets\_Scripts\Server.cs" Line="128" Column="53" />
+      <File FileName="Assets\_Scripts\SphereRegisterer.cs" Line="18" Column="14" />
+      <File FileName="Assets\_Scripts\Scales.cs" Line="15" Column="19" />
+      <File FileName="Assets\_Scripts\FlyNavigator.cs" Line="65" Column="1" />
+      <File FileName="Assets\_Scripts\SphereInfo.cs" Line="6" Column="19" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

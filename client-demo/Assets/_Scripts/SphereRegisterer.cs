@@ -14,6 +14,9 @@ public class SphereRegisterer : MonoBehaviour {
 	private void FixedUpdate ()
 	{
 		if(Server.Instance.IsInitialized())
-			Server.Instance.RegisterSphere(id, transform.position, transform.localScale.x / 2);
+		{
+			SphereInfo sphere = new SphereInfo(id, transform.position, transform.localScale.x / 2);
+			Server.Instance.RegisterSphere(sphere);
+		}
 	}
 }

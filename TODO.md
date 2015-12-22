@@ -2,23 +2,24 @@
 
 ## Server
 
-[ ] Test nearest sphere in velocity endpoint
-[ ] Independent API (nearest, nearest visible, etc)
 [ ] VisibilityHelper and Plane/CameraInfo redundant
 [ ] In code TODOs
 [ ] Repeated code in binding.cpp
 [ ] Max/Min speed config
 [ ] Remove points
-
-[ ] Cubes
 [ ] Code headers (description)
-[ ] Async -> Parallelization
 [ ] Fix speed vs velocity
-[ ] Logging
 [ ] Check is_vec3 and others in rmns.js
+
+[ ] Independent API (nearest, nearest visible, etc)
+[ ] Test independent API + spatial
+[ ] Cubes
+[ ] Async -> Parallelization
+[ ] Logging
 [ ] Number of spheres performance test
 [ ] Open source license
 [ ] Separate input/internal error msgs (400 from 500)
+[ ] Configurable port (don't forget tests)
 
 [ ] 80 col
 [ ] Add point array to avoid re-building the kd-tree
@@ -43,6 +44,7 @@
 [x] Route tests
 [x] Define only once V8 strings
 [x] Binding h/cpp
+[x] Test nearest sphere in velocity endpoint
 
 ## Client Demo
 
@@ -67,6 +69,6 @@
 
 ## Targets
 
-[ ] Remote service
+[x] Remote service
 [ ] Remote parallel service
 [ ] Remote parallel service with LoD
