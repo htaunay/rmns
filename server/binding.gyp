@@ -9,7 +9,7 @@
                 "src/SpatialStructure.cpp",
                 "src/Sphere.cpp"
             ],
-            "include_dirs": [ "headers" ],
+            "include_dirs": ["headers"],
             "cflags!": ["-fno-exceptions"],
             "cflags_cc!": ["-fno-exceptions"],
             "xcode_settings": {
