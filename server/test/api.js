@@ -82,7 +82,7 @@ var test_velocity = function(expected_res, post_data, done) {
             var r1 = body.result;
             var r2 = expected_res.result;
 
-            (r1.distance == undefined).should.be.false();
+            (r1.distance === undefined).should.be.false();
             r2.distance.should.be.approximately(r1.distance, 0.001);
             (r1.velocity === undefined).should.be.false();
             r2.velocity.should.be.approximately(r1.velocity, 0.001);
