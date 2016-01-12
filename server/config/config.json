@@ -1,7 +1,7 @@
 {
     "port": "8081",
     "visible_fovy": 0.75,
-    "activate_grid": true,
+    "activate_grid": false,
     "cell_size": 1.0,
     "is_master": false,
     "slaves": {
