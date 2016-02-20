@@ -29,6 +29,11 @@ void Sphere::setCenter(glm::vec3 center)
 
 double Sphere::distanceTo(glm::vec3 point)
 {
-    return glm::distance(_center, point) - _radius;
+    double distance = glm::distance(_center, point) - _radius;
+
+    // Clamp if inside sphere
+    if(distance < 0) distance = 0;
+
+    return distance;
 }
 

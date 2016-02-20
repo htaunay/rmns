@@ -49,6 +49,10 @@ var test_post = function(endpoint, expected_res, post_data, done) {
 
         if("result" in expected_res) {
 
+            // Ignore time results that are not deterministic
+            if("time" in body.result) delete body.result["time"];
+            if("time" in expected_res.result) delete expected_res.result["time"];
+
             (body.result === undefined).should.be.false();
             body.result.should.be.eql(expected_res.result);
         }

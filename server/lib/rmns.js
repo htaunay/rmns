@@ -47,7 +47,7 @@ var build_nearest_func = function(type, method_name, ok_msg, error_msg) {
         }
 
         if(!utils.is_nearest_result_valid(result))
-            return error_msg;
+            return error_msg();
 
         return ok_msg(result);
     };
@@ -229,12 +229,12 @@ rmns.POINTS_ERROR = function() {
     return {"code": 400, "msg": "Invalid argument type or size"};
 };
 
-rmns.SPHERES_OK = function(num, total) {
+rmns.SPHERES_OK = function(num, total, time) {
 
     var msg = "Included/Updated " + num + " sphere(s) successfully. " +
               "The total now is " + total + " sphere(s)";
 
-    return {"code": 200, "msg": msg};
+    return {"code": 200, "msg": msg, "result": {"time": time}};
 }
 
 rmns.SPHERES_ERROR = function() {
@@ -401,6 +401,7 @@ rmns.register_spheres = function(data) {
     if(!Array.isArray(spheres))
         return this.SPHERES_ERROR();
 
+    var before = Date.now()
     for(var key in spheres) {
 
         var sphere = spheres[key];
@@ -420,10 +421,11 @@ rmns.register_spheres = function(data) {
     }
 
     var result = spatial.spheres(spheres);
+    var time = Date.now() - before;
     if(!("total" in result) || !utils.is_num(result.total) || result.total < 1)
         return this.SPHERES_ERROR();
 
-    return this.SPHERES_OK(spheres.length, result.total);
+    return this.SPHERES_OK(spheres.length, result.total, time);
 };
 
 rmns.reset = function() {
