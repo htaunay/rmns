@@ -4,7 +4,9 @@ using System.Collections;
 public class FlyNavigator : MonoBehaviour
 {
 	[SerializeField]
-	public bool Activate = false;
+	private bool Activate = false;
+
+	private int activateState = 0;
 
 	[SerializeField]
 	private float translationSpeed = 1;
@@ -18,6 +20,16 @@ public class FlyNavigator : MonoBehaviour
 		transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0.0f);
 
 		transform.Translate(GetTranslation());
+
+		if(Input.GetKeyUp(KeyCode.M))
+		{
+			activateState++;
+			if(activateState >= 2)
+			{
+				activateState = 0;
+				Activate = !Activate;
+			}
+		}
 	}
 
 	private Vector3 GetRotation()

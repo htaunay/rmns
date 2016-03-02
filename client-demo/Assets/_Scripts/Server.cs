@@ -55,7 +55,7 @@ public class Server : MonoBehaviour {
 
 	private void OnGUI()
 	{
-		/*if(!result) return;
+		if(!result) return;
 
 		string distance 		= result.GetField("distance").ToString();
 		string velocity 		= result.GetField("velocity").ToString();
@@ -70,7 +70,7 @@ public class Server : MonoBehaviour {
 			"Multiplier: " + multiplier + "\n" + 
 			"Times: " + times; 
 
-		GUI.Label(new Rect(20, 20, 500, 100), log);*/
+		GUI.Label(new Rect(20, 20, 500, 100), log);
 	}
 
 	private void FixedUpdate()
@@ -157,7 +157,8 @@ public class Server : MonoBehaviour {
 
 			waitingForResponse = false;
 
-			// TODO LOGGER Debug.Log (req.response.Text);
+			// TODO LOGGER
+			Debug.Log (req.responseTime);
 			JSONObject responseObj = new JSONObject( req.response.Text );
 			double timestamp = responseObj.GetField("timestamp").n;
 
@@ -167,7 +168,7 @@ public class Server : MonoBehaviour {
 			result = responseObj.GetField("result");
 			float speed = float.Parse(result.GetField("velocity").ToString());
 
-			navigator.SetTranslationSpeed(Mathf.Max(speed / /*TODO remove*/5.0f, 0.1f));
+			navigator.SetTranslationSpeed(Mathf.Max(speed, 0.1f));
 
 			if(nearest)
 			{
@@ -200,16 +201,6 @@ public class Server : MonoBehaviour {
 					vnearest.transform.position = Vector3.zero;
 				}
 			}
-
-//			JSONObject pointsObj = obj.GetField("points");
-//			for(int i = 0; i < 8; i++)
-//			{
-//				JSONObject pointObj = pointsObj.list[i];
-//				float x = float.Parse(pointObj.GetField("x").ToString());
-//				float y = float.Parse(pointObj.GetField("y").ToString());
-//				float z = float.Parse(pointObj.GetField("z").ToString());
-//				points[i].transform.position = new Vector3(x,y,z);
-//			}
 		});
 	}
 

@@ -78,7 +78,7 @@ public class Planet : MonoBehaviour
 			double distanceInKm = Scales.Instance.GetRealValue(distanceInAu);
 
 			string text = gameObject.name + "\n" + Scales.Instance.FormatDistanceText(distanceInKm);
-			GUI.Label(new Rect(screenpos.x, camera.pixelHeight - screenpos.y, 80, 40), text);
+			GUI.Label(new Rect(screenpos.x, camera.pixelHeight - screenpos.y, 100, 40), text);
 		}
 	}
 
