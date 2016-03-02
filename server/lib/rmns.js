@@ -576,6 +576,9 @@ rmns.local_velocity = function(data) {
     var result = calc_heuristic(point_result, vpoint_result,
             obj_result, vobj_result, eye, times);
 
+    if(config.velocity_multiplier !== undefined)
+        heuristic_result.velocity *= config.velocity_multiplier;
+
     times.velocity = Date.now() - start;
     return this.VELOCITY_OK(
         result.heuristic_result,

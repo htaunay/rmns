@@ -1,8 +1,9 @@
 {
     "port": "8081",
     "visible_fovy": 0.75,
-    "activate_grid": false,
     "cell_size": 1.0,
+    "activate_grid": true,
+    "velocity_multiplier": 0.2,
     "is_master": false,
     "slaves": {
         "/stats": {
