@@ -43,7 +43,7 @@ namespace spatial
     : public neighbor_iterator<Ct, manhattan<Ct, DistanceType, Diff> >
   {
     // Check that DistanceType is a fundamental arithmetic type
-#ifdef _APPLE_
+#ifdef __APPLE__
     typedef typename enable_if<std::is_arithmetic<DistanceType> >::type
 #else
     typedef typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type
@@ -67,7 +67,7 @@ namespace spatial
     : public neighbor_iterator<const Ct, manhattan<Ct, DistanceType, Diff> >
   {
     // Some concept checking performed here
-#ifdef _APPLE_
+#ifdef __APPLE__
     typedef enable_if<std::is_arithmetic<DistanceType> >
 #else
     typedef enable_if<std::tr1::is_arithmetic<DistanceType> >
@@ -117,7 +117,7 @@ namespace spatial
     : public neighbor_iterator_pair<Ct, manhattan<Ct, DistanceType, Diff> >
   {
     // Some concept checking performed here
-#ifdef _APPLE_
+#ifdef __APPLE__
     typedef enable_if<std::is_arithmetic<DistanceType> >
 #else
     typedef enable_if<std::tr1::is_arithmetic<DistanceType> >
@@ -148,7 +148,7 @@ namespace spatial
   <const Ct, manhattan<Ct, DistanceType, Diff> >
   {
     // Some concept checking performed here
-#ifdef _APPLE_
+#ifdef __APPLE__
     typedef enable_if<std::is_arithmetic<DistanceType> >
 #else
     typedef enable_if<std::tr1::is_arithmetic<DistanceType> >
@@ -428,7 +428,7 @@ namespace spatial
   ///@{
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_arithmetic<DistanceType>,
 #else
   enable_if<std::tr1::is_arithmetic<DistanceType>,
@@ -445,7 +445,7 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_arithmetic<DistanceType>,
 #else
   enable_if<std::tr1::is_arithmetic<DistanceType>,
@@ -462,7 +462,7 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_arithmetic<DistanceType>,
 #else
   enable_if<std::tr1::is_arithmetic<DistanceType>,
@@ -490,7 +490,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_arithmetic<DistanceType>::value,
 #else
               && std::tr1::is_arithmetic<DistanceType>::value,
@@ -512,7 +512,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_arithmetic<DistanceType>::value,
 #else
               && std::tr1::is_arithmetic<DistanceType>::value,
@@ -534,7 +534,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_arithmetic<DistanceType>::value,
 #else
               && std::tr1::is_arithmetic<DistanceType>::value,
@@ -566,7 +566,7 @@ namespace spatial
   ///@{
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_arithmetic<DistanceType>,
 #else
   enable_if<std::tr1::is_arithmetic<DistanceType>,
@@ -583,7 +583,7 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_arithmetic<DistanceType>,
 #else
   enable_if<std::tr1::is_arithmetic<DistanceType>,
@@ -600,7 +600,7 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_arithmetic<DistanceType>,
 #else
   enable_if<std::tr1::is_arithmetic<DistanceType>,
@@ -628,7 +628,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_arithmetic<DistanceType>::value,
 #else
               && std::tr1::is_arithmetic<DistanceType>::value,
@@ -650,7 +650,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_arithmetic<DistanceType>::value,
 #else
               && std::tr1::is_arithmetic<DistanceType>::value,
@@ -672,7 +672,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_arithmetic<DistanceType>::value,
 #else
               && std::tr1::is_arithmetic<DistanceType>::value,

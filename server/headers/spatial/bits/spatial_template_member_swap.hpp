@@ -16,7 +16,7 @@
 
 #include <algorithm> // provides: ::std::swap
 // provides: ::std::tr1::is_empty, std::tr1::false_type and std::tr1::true_type
-#ifdef _APPLE_
+#ifdef __APPLE__
 #include "../traits.hpp"
 #else
 #include <spatial/bits/spatial_pull_tr1.hpp>
@@ -43,7 +43,7 @@ namespace spatial
 
     template <typename Tp>
     struct template_member_assign
-#ifdef _APPLE_
+#ifdef __APPLE__
       : template_member_assign_provider<std::is_empty<Tp>::value, Tp>
 #else
       : template_member_assign_provider<std::tr1::is_empty<Tp>::value, Tp>
@@ -71,7 +71,7 @@ namespace spatial
 
     template <typename Tp>
     struct template_member_swap
-#ifdef _APPLE_
+#ifdef __APPLE__
       : template_member_swap_provider<std::is_empty<Tp>::value, Tp>
 #else
       : template_member_swap_provider<std::tr1::is_empty<Tp>::value, Tp>

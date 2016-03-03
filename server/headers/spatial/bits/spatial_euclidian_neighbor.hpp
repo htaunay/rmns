@@ -43,7 +43,7 @@ namespace spatial
     : public neighbor_iterator<Ct, euclidian<Ct, DistanceType, Diff> >
   {
     // Check that DistanceType is a fundamental floating point type
-#ifdef _APPLE_
+#ifdef __APPLE__
     typedef typename enable_if<std::is_floating_point<DistanceType> >::type
 #else
     typedef typename enable_if<std::tr1::is_floating_point<DistanceType> >::type
@@ -67,7 +67,7 @@ namespace spatial
     : public neighbor_iterator<const Ct, euclidian<Ct, DistanceType, Diff> >
   {
     // Some concept checking performed here
-#ifdef _APPLE_
+#ifdef __APPLE__
     typedef enable_if<std::is_floating_point<DistanceType> >
 #else
     typedef enable_if<std::tr1::is_floating_point<DistanceType> >
@@ -117,7 +117,7 @@ namespace spatial
     : public neighbor_iterator_pair<Ct, euclidian<Ct, DistanceType, Diff> >
   {
     // Some concept checking performed here
-#ifdef _APPLE_
+#ifdef __APPLE__
     typedef enable_if<std::is_floating_point<DistanceType> >
 #else
     typedef enable_if<std::tr1::is_floating_point<DistanceType> >
@@ -148,7 +148,7 @@ namespace spatial
   <const Ct, euclidian<Ct, DistanceType, Diff> >
   {
     // Some concept checking performed here
-#ifdef _APPLE_
+#ifdef __APPLE__
     typedef enable_if<std::is_floating_point<DistanceType> >
 #else
     typedef enable_if<std::tr1::is_floating_point<DistanceType> >
@@ -428,7 +428,7 @@ namespace spatial
   ///@{
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_floating_point<DistanceType>,
 #else
   enable_if<std::tr1::is_floating_point<DistanceType>,
@@ -445,7 +445,7 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_floating_point<DistanceType>,
 #else
   enable_if<std::tr1::is_floating_point<DistanceType>,
@@ -462,7 +462,7 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_floating_point<DistanceType>,
 #else
   enable_if<std::tr1::is_floating_point<DistanceType>,
@@ -490,7 +490,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_floating_point<DistanceType>::value,
 #else
               && std::tr1::is_floating_point<DistanceType>::value,
@@ -512,7 +512,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_floating_point<DistanceType>::value,
 #else
               && std::tr1::is_floating_point<DistanceType>::value,
@@ -534,7 +534,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_floating_point<DistanceType>::value,
 #else
               && std::tr1::is_floating_point<DistanceType>::value,
@@ -566,7 +566,7 @@ namespace spatial
   ///@{
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_floating_point<DistanceType>,
 #else
   enable_if<std::tr1::is_floating_point<DistanceType>,
@@ -583,7 +583,7 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_floating_point<DistanceType>,
 #else
   enable_if<std::tr1::is_floating_point<DistanceType>,
@@ -600,7 +600,7 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
-#ifdef _APPLE_
+#ifdef __APPLE__
   enable_if<std::is_floating_point<DistanceType>,
 #else
   enable_if<std::tr1::is_floating_point<DistanceType>,
@@ -628,7 +628,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_floating_point<DistanceType>::value,
 #else
               && std::tr1::is_floating_point<DistanceType>::value,
@@ -650,7 +650,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_floating_point<DistanceType>::value,
 #else
               && std::tr1::is_floating_point<DistanceType>::value,
@@ -672,7 +672,7 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
-#ifdef _APPLE_
+#ifdef __APPLE__
               && std::is_floating_point<DistanceType>::value,
 #else
               && std::tr1::is_floating_point<DistanceType>::value,

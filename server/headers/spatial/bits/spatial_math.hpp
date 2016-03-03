@@ -37,7 +37,7 @@ namespace spatial
      *  \throws negative_distance
      */
     template<typename Tp>
-#ifdef _APPLE_
+#ifdef __APPLE__
     inline typename enable_if<std::is_arithmetic<Tp> >::type
 #else
     inline typename enable_if<std::tr1::is_arithmetic<Tp> >::type
@@ -107,7 +107,7 @@ namespace spatial
      *  define the numeric limits \c numeric_limits<Tp>::max() for that type.
      */
     template <typename Tp>
-#ifdef _APPLE_
+#ifdef __APPLE__
     inline typename enable_if<std::is_arithmetic<Tp>, Tp>::type
 #else
     inline typename enable_if<std::tr1::is_arithmetic<Tp>, Tp>::type
@@ -135,7 +135,7 @@ namespace spatial
      *  computation with little efforts from their part.
      */
     template <typename Tp>
-#ifdef _APPLE_
+#ifdef __APPLE__
     inline typename enable_if<std::is_arithmetic<Tp>, Tp>::type
 #else
     inline typename enable_if<std::tr1::is_arithmetic<Tp>, Tp>::type
@@ -172,7 +172,7 @@ namespace spatial
      *  type.
      */
     template <typename Tp>
-#ifdef _APPLE_
+#ifdef __APPLE__
     inline typename enable_if<std::is_arithmetic<Tp>, Tp>::type
 #else
     inline typename enable_if<std::tr1::is_arithmetic<Tp>, Tp>::type
@@ -201,7 +201,7 @@ namespace spatial
      *  plane orthogonal to the axis of dimension \c dim and passing by \c key.
      */
     template <typename Key, typename Difference, typename Unit>
-#ifdef _APPLE_
+#ifdef __APPLE__
     inline typename enable_if<std::is_floating_point<Unit>, Unit>::type
 #else
     inline typename enable_if<std::tr1::is_floating_point<Unit>, Unit>::type
@@ -226,7 +226,7 @@ namespace spatial
      *  overflow than the first form.
      */
     template <typename Key, typename Difference, typename Unit>
-#ifdef _APPLE_
+#ifdef __APPLE__
     inline typename enable_if<std::is_floating_point<Unit>, Unit>::type
 #else
     inline typename enable_if<std::tr1::is_floating_point<Unit>, Unit>::type
@@ -268,7 +268,7 @@ namespace spatial
      *  \c key.
      */
     template <typename Key, typename Difference, typename Unit>
-#ifdef _APPLE_
+#ifdef __APPLE__
     inline typename enable_if<std::is_arithmetic<Unit>, Unit>::type
 #else
     inline typename enable_if<std::tr1::is_arithmetic<Unit>, Unit>::type
@@ -289,7 +289,7 @@ namespace spatial
      *  \p key.
      */
     template <typename Key, typename Difference, typename Unit>
-#ifdef _APPLE_
+#ifdef __APPLE__
     inline typename enable_if<std::is_arithmetic<Unit>, Unit>::type
 #else
     inline typename enable_if<std::tr1::is_arithmetic<Unit>, Unit>::type
@@ -320,7 +320,7 @@ namespace spatial
      *  \c key.
      */
     template <typename Key, typename Difference, typename Unit>
-#ifdef _APPLE_
+#ifdef __APPLE__
     inline typename enable_if<std::is_arithmetic<Unit>, Unit>::type
 #else
     inline typename enable_if<std::tr1::is_arithmetic<Unit>, Unit>::type
@@ -339,7 +339,7 @@ namespace spatial
      *  Compute the manhattan distance between \p origin and \p key.
      */
     template <typename Key, typename Difference, typename Unit>
-#ifdef _APPLE_
+#ifdef __APPLE__
     inline typename enable_if<std::is_arithmetic<Unit>, Unit>::type
 #else
     inline typename enable_if<std::tr1::is_arithmetic<Unit>, Unit>::type
