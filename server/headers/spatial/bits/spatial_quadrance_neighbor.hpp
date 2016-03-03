@@ -43,7 +43,11 @@ namespace spatial
     : public neighbor_iterator<Ct, quadrance<Ct, DistanceType, Diff> >
   {
     // Check that DistanceType is a fundamental arithmetic type
+#ifdef _APPLE_
     typedef typename enable_if<std::is_arithmetic<DistanceType> >::type
+#else
+    typedef typename enable_if<std::tr1::is_arithmetic<DistanceType> >::type
+#endif
     check_concept_distance_type_is_arithmetic;
 
   public:
@@ -63,7 +67,11 @@ namespace spatial
     : public neighbor_iterator<const Ct, quadrance<Ct, DistanceType, Diff> >
   {
     // Some concept checking performed here
+#ifdef _APPLE_
     typedef enable_if<std::is_arithmetic<DistanceType> >
+#else
+    typedef enable_if<std::tr1::is_arithmetic<DistanceType> >
+#endif
     check_concept_distance_type_is_arithmetic;
 
   public:
@@ -109,7 +117,11 @@ namespace spatial
     : public neighbor_iterator_pair<Ct, quadrance<Ct, DistanceType, Diff> >
   {
     // Some concept checking performed here
+#ifdef _APPLE_
     typedef enable_if<std::is_arithmetic<DistanceType> >
+#else
+    typedef enable_if<std::tr1::is_arithmetic<DistanceType> >
+#endif
     check_concept_distance_type_is_arithmetic;
 
   public:
@@ -136,7 +148,11 @@ namespace spatial
   <const Ct, quadrance<Ct, DistanceType, Diff> >
   {
     // Some concept checking performed here
+#ifdef _APPLE_
     typedef enable_if<std::is_arithmetic<DistanceType> >
+#else
+    typedef enable_if<std::tr1::is_arithmetic<DistanceType> >
+#endif
     check_concept_distance_type_is_arithmetic;
 
   public:
@@ -412,7 +428,11 @@ namespace spatial
   ///@{
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
+#ifdef _APPLE_
   enable_if<std::is_arithmetic<DistanceType>,
+#else
+  enable_if<std::tr1::is_arithmetic<DistanceType>,
+#endif
             quadrance_neighbor_iterator<Ct, DistanceType, Diff> >::type
   quadrance_neighbor_lower_bound
   (Ct& container, const Diff& diff,
@@ -425,7 +445,11 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
+#ifdef _APPLE_
   enable_if<std::is_arithmetic<DistanceType>,
+#else
+  enable_if<std::tr1::is_arithmetic<DistanceType>,
+#endif
             quadrance_neighbor_iterator<const Ct, DistanceType, Diff> >::type
   quadrance_neighbor_lower_bound
   (const Ct& container, const Diff& diff,
@@ -438,7 +462,11 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
+#ifdef _APPLE_
   enable_if<std::is_arithmetic<DistanceType>,
+#else
+  enable_if<std::tr1::is_arithmetic<DistanceType>,
+#endif
             quadrance_neighbor_iterator<const Ct, DistanceType, Diff> >::type
   quadrance_neighbor_clower_bound
   (const Ct& container, const Diff& diff,
@@ -462,7 +490,11 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
+#ifdef _APPLE_
               && std::is_arithmetic<DistanceType>::value,
+#else
+              && std::tr1::is_arithmetic<DistanceType>::value,
+#endif
               quadrance_neighbor_iterator<Ct, DistanceType> >::type
   quadrance_neighbor_lower_bound
   (Ct& container,
@@ -480,7 +512,11 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
+#ifdef _APPLE_
               && std::is_arithmetic<DistanceType>::value,
+#else
+              && std::tr1::is_arithmetic<DistanceType>::value,
+#endif
               quadrance_neighbor_iterator<const Ct, DistanceType> >::type
   quadrance_neighbor_lower_bound
   (const Ct& container,
@@ -498,7 +534,11 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
+#ifdef _APPLE_
               && std::is_arithmetic<DistanceType>::value,
+#else
+              && std::tr1::is_arithmetic<DistanceType>::value,
+#endif
               quadrance_neighbor_iterator<const Ct, DistanceType> >::type
   quadrance_neighbor_clower_bound
   (const Ct& container,
@@ -526,7 +566,11 @@ namespace spatial
   ///@{
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
+#ifdef _APPLE_
   enable_if<std::is_arithmetic<DistanceType>,
+#else
+  enable_if<std::tr1::is_arithmetic<DistanceType>,
+#endif
             quadrance_neighbor_iterator<Ct, DistanceType, Diff> >::type
   quadrance_neighbor_upper_bound
   (Ct& container, const Diff& diff,
@@ -539,7 +583,11 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
+#ifdef _APPLE_
   enable_if<std::is_arithmetic<DistanceType>,
+#else
+  enable_if<std::tr1::is_arithmetic<DistanceType>,
+#endif
             quadrance_neighbor_iterator<const Ct, DistanceType, Diff> >::type
   quadrance_neighbor_upper_bound
   (const Ct& container, const Diff& diff,
@@ -552,7 +600,11 @@ namespace spatial
 
   template <typename Ct, typename Diff, typename DistanceType>
   inline typename
+#ifdef _APPLE_
   enable_if<std::is_arithmetic<DistanceType>,
+#else
+  enable_if<std::tr1::is_arithmetic<DistanceType>,
+#endif
             quadrance_neighbor_iterator<const Ct, DistanceType, Diff> >::type
   quadrance_neighbor_cupper_bound
   (const Ct& container, const Diff& diff,
@@ -576,7 +628,11 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
+#ifdef _APPLE_
               && std::is_arithmetic<DistanceType>::value,
+#else
+              && std::tr1::is_arithmetic<DistanceType>::value,
+#endif
               quadrance_neighbor_iterator<Ct, DistanceType> >::type
   quadrance_neighbor_upper_bound
   (Ct& container,
@@ -594,7 +650,11 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
+#ifdef _APPLE_
               && std::is_arithmetic<DistanceType>::value,
+#else
+              && std::tr1::is_arithmetic<DistanceType>::value,
+#endif
               quadrance_neighbor_iterator<const Ct, DistanceType> >::type
   quadrance_neighbor_upper_bound
   (const Ct& container,
@@ -612,7 +672,11 @@ namespace spatial
   template <typename Ct, typename DistanceType>
   inline typename
   enable_if_c<details::is_compare_builtin<Ct>::value
+#ifdef _APPLE_
               && std::is_arithmetic<DistanceType>::value,
+#else
+              && std::tr1::is_arithmetic<DistanceType>::value,
+#endif
               quadrance_neighbor_iterator<const Ct, DistanceType> >::type
   quadrance_neighbor_cupper_bound
   (const Ct& container,

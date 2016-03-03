@@ -36,19 +36,39 @@ namespace spatial
      */
     ///@{
     template <typename>
+#ifdef _APPLE_
     struct is_compare_builtin_helper : std::false_type { };
+#else
+    struct is_compare_builtin_helper : std::tr1::false_type { };
+#endif
     template <typename Tp>
     struct is_compare_builtin_helper<bracket_less<Tp> >
+#ifdef _APPLE_
       : std::true_type { };
+#else
+      : std::tr1::true_type { };
+#endif
     template <typename Tp>
     struct is_compare_builtin_helper<paren_less<Tp> >
+#ifdef _APPLE_
       : std::true_type { };
+#else
+      : std::tr1::true_type { };
+#endif
     template <typename Tp>
     struct is_compare_builtin_helper<iterator_less<Tp> >
+#ifdef _APPLE_
       : std::true_type { };
+#else
+      : std::tr1::true_type { };
+#endif
     template <typename Accessor, typename Tp>
     struct is_compare_builtin_helper<accessor_less<Accessor, Tp> >
+#ifdef _APPLE_
       : std::true_type { };
+#else
+      : std::tr1::true_type { };
+#endif
     ///@}
 
     /**
@@ -162,19 +182,39 @@ namespace spatial
      *  @{
      */
     template <typename>
+#ifdef _APPLE_
     struct is_difference_builtin : std::false_type { };
+#else
+    struct is_difference_builtin : std::tr1::false_type { };
+#endif
     template <typename Tp, typename Unit>
     struct is_difference_builtin<bracket_minus<Tp, Unit> >
+#ifdef _APPLE_
       : std::true_type { };
+#else
+      : std::tr1::true_type { };
+#endif
     template <typename Tp, typename Unit>
     struct is_difference_builtin<paren_minus<Tp, Unit> >
+#ifdef _APPLE_
       : std::true_type { };
+#else
+      : std::tr1::true_type { };
+#endif
     template <typename Tp, typename Unit>
     struct is_difference_builtin<iterator_minus<Tp, Unit> >
+#ifdef _APPLE_
       : std::true_type { };
+#else
+      : std::tr1::true_type { };
+#endif
     template <typename Accessor, typename Tp, typename Unit>
     struct is_difference_builtin<accessor_minus<Accessor, Tp, Unit> >
+#ifdef _APPLE_
       : std::true_type { };
+#else
+      : std::tr1::true_type { };
+#endif
     /**
      *  @}
      */
