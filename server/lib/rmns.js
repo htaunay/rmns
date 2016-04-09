@@ -169,6 +169,9 @@ var return_velocity = function(final_result, times, start, cb) {
                 times
         );
 
+        if(config.velocity_multiplier !== undefined)
+            result.heuristic_result.velocity *= config.velocity_multiplier;
+
         times.velocity = Date.now() - start;
         cb(
             rmns.VELOCITY_OK(
