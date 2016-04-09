@@ -53,7 +53,7 @@ public class Server : MonoBehaviour {
 		});
 	}
 
-	private void OnGUI()
+	/*private void OnGUI()
 	{
 		if(!result) return;
 
@@ -64,14 +64,14 @@ public class Server : MonoBehaviour {
 		string times 			= result.GetField("times").ToString();
 
 		string log =
-			"Distance: " + distance + "\n" + 
-			"Velocity: " + velocity + "\n" + 
+			"Distance: " + distance + " UA\n" + 
+			"Velocity: " + velocity + " UA/s\n" + 
 			"Cos Similarity: " + cos_similarity + "\n" + 
 			"Multiplier: " + multiplier + "\n" + 
 			"Times: " + times; 
 
 		GUI.Label(new Rect(20, 20, 500, 100), log);
-	}
+	}*/
 
 	private void FixedUpdate()
 	{
@@ -158,7 +158,7 @@ public class Server : MonoBehaviour {
 			waitingForResponse = false;
 
 			// TODO LOGGER
-			Debug.Log (req.responseTime);
+			//Debug.Log (req.responseTime);
 			JSONObject responseObj = new JSONObject( req.response.Text );
 			double timestamp = responseObj.GetField("timestamp").n;
 
@@ -166,6 +166,7 @@ public class Server : MonoBehaviour {
 			else lastTimestamp = timestamp;
 
 			result = responseObj.GetField("result");
+			//Debug.Log (result.GetField("times").ToString());
 			float speed = float.Parse(result.GetField("velocity").ToString());
 
 			navigator.SetTranslationSpeed(Mathf.Max(speed, 0.1f));
