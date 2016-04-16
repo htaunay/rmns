@@ -6,32 +6,36 @@ var rmns = require("../lib/rmns.js");
 var tools = require("./tools.js")
 var request = require("request");
 
+var utils = require("../lib/utils.js");
+var port = utils.load_config().port;
+
 /* ========================================================================= */
 /* ============================= HELPER METHODS ============================ */
 /* ========================================================================= */
 
 var test_get = function(endpoint, expected_res, done) {
 
-    request.get("http://localhost:8081/" + endpoint, function(err, res, body) {
+    request.get("http://localhost:" + port + "/" + endpoint,
+        function(err, res, body) {
 
-        if(err !== null)
-            console.log(err);
+            if(err !== null)
+                console.log(err);
 
-        res.statusCode.should.be.eql(expected_res.code);
-        res.should.be.json();
+            res.statusCode.should.be.eql(expected_res.code);
+            res.should.be.json();
 
-        body = JSON.parse(res.body);
-        (body.msg === undefined).should.be.false();
-        body.msg.should.be.eql(expected_res.msg);
+            body = JSON.parse(res.body);
+            (body.msg === undefined).should.be.false();
+            body.msg.should.be.eql(expected_res.msg);
 
-        done();
+            done();
     });
 };
 
 var test_post = function(endpoint, expected_res, post_data, done) {
 
     var data  = {};
-    data.url  = "http://localhost:8081/" + endpoint;
+    data.url  = "http://localhost:" + port + "/" + endpoint;
     data.headers = {"content-type" : "application/json"};
     data.body = JSON.stringify(post_data);
 
@@ -64,7 +68,7 @@ var test_post = function(endpoint, expected_res, post_data, done) {
 var test_velocity = function(expected_res, post_data, done) {
 
     var data  = {};
-    data.url  = "http://localhost:8081/velocity";
+    data.url  = "http://localhost:" + port + "/velocity";
     data.headers = {"content-type" : "application/json"};
     data.body = JSON.stringify(post_data);
 
@@ -111,7 +115,7 @@ var test_velocity = function(expected_res, post_data, done) {
 describe("The server\'s", function () {
 
     before(function () {
-        server.listen(8081);
+        server.start();
     });
 
     beforeEach(function (done) {

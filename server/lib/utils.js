@@ -1,9 +1,21 @@
 var http = require("http");
 var math = require("math");
 
-var config = require("../config/config.json");
-
 var utils = {};
+
+utils.load_config = function() {
+
+    var config_file = process.env.NODE_ENV;
+    var path;
+
+    if(config_file !== undefined && typeof config_file === "string")
+        path = "../config/" + config_file + ".json";
+    else
+        path = "../config/stand-alone.json";
+
+    utils.config_file = config_file;
+    return require(path);
+};
 
 utils.sub_vec3 = function(v1, v2) {
 
@@ -99,6 +111,8 @@ var return_from_forward = function(json, length, final_result, cb) {
 utils.forward = function(path, data, cb) {
 
     var endpoints;
+    var config = this.load_config();
+
     if(config.slaves[path] instanceof Array) {
         endpoints = config.slaves[path];
     }

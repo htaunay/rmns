@@ -1,54 +1,55 @@
 {
-    "port": "8081",
+    "port": "8087",
     "visible_fovy": 0.75,
     "cell_size": 1.0,
     "activate_grid": false,
-    "velocity_multiplier": 0.2,
-    "is_master": false,
+    "velocity_multiplier": 1.0,
+    "is_master": true,
     "slaves": {
         "/stats": {
             "ip": "127.0.0.1",
-            "port": "8082"
+            "port": "8088"
         },
         "/points": [
             {
                 "ip": "127.0.0.1",
-                "port": "8082"
+                "port": "8088"
             },
             {
                 "ip": "127.0.0.1",
-                "port": "8083"
+                "port": "8089"
             }
         ],
         "/spheres": {
             "ip": "127.0.0.1",
-            "port": "8082"
+            "port": "8088"
         },
         "/reset": [
             {
                 "ip": "127.0.0.1",
-                "port": "8082"
+                "port": "8088"
             },
             {
                 "ip": "127.0.0.1",
-                "port": "8083"
+                "port": "8089"
             }
         ],
         "/nearest_point": {
             "ip": "127.0.0.1",
-            "port": "8082"
+            "port": "8088"
         },
         "/nearest_vpoint": {
             "ip": "127.0.0.1",
-            "port": "8083"
+            "port": "8089"
         },
         "/nearest_object": {
             "ip": "127.0.0.1",
-            "port": "8082"
+            "port": "8088"
         },
         "/nearest_vobject": {
             "ip": "127.0.0.1",
-            "port": "8082"
+            "port": "8088"
         }
     }
 }
+

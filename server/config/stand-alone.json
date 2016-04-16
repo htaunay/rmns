@@ -1,0 +1,8 @@
+{
+    "port": "8081",
+    "visible_fovy": 0.75,
+    "cell_size": 1.0,
+    "activate_grid": false,
+    "velocity_multiplier": 1.0,
+    "is_master": false
+}

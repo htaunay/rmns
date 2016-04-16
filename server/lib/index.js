@@ -2,7 +2,7 @@ var http = require("http");
 
 var rmns = require("./rmns")
 var utils = require("./utils");
-var config = require("../config/config.json");
+var config = utils.load_config();
 
 /* ========================================================================= */
 /* ============================= SERVER SETUP ============================== */
@@ -102,5 +102,9 @@ var server = module.exports = http.createServer(function (request, response) {
     });
 });
 
-server.listen(config.port);
-console.log("Server running at http://127.0.0.1:" + config.port + "/");
+server.start = function() {
+    server.listen(config.port);
+    console.log("Server running at http://127.0.0.1:" + config.port + "/");
+};
+
+server.start();

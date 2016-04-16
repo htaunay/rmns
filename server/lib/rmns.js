@@ -1,5 +1,5 @@
 var utils = require("./utils");
-var config = require("../config/config.json");
+var config = utils.load_config();
 
 var spatial = require("../build/Release/binding");
 spatial.setup_config(config);

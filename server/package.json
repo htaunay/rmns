@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rm -rf build && node-gyp configure && node-gyp build",
     "start": "node lib/index.js",
-    "test": "mocha test/*.js"
+    "test": "mocha --timeout 10000 test/*.js"
   },
   "repository": {
     "type": "git",
