@@ -25,8 +25,18 @@ describe("The server\"s", function () {
 
         if(test_type === undefined) {
 
-            master = exec("NODE_ENV=master mocha --timeout 10000 test/*.js",
+            master = exec("NODE_ENV=master mocha --timeout 10000 test/*.js > ~/.rmnslog",
                 function(error, stdout, stderr) {
+
+                    if(error !== null) {
+                        fs = require('fs');
+                        fs.readFile('~/.rmnslog', 'utf8', function (err,data) {
+                            if (err) {
+                                return console.log(err);
+                            }
+                            console.log(data);
+                        });
+                    }
 
                     (error === null).should.be.true();
                     done(); 
