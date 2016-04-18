@@ -12,6 +12,7 @@ describe("The server\"s", function () {
             slave1 = exec("NODE_ENV=slave1 npm start", function(){});
             slave2 = exec("NODE_ENV=slave2 npm start", function(){});
 
+            // Wait for slave servers to start before running master test
             setTimeout(function() {
                done();    
             }, 1000);

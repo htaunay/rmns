@@ -67,17 +67,263 @@ This project was inspired by the "A spatial partitioning heuristic for
 automatic-adjustment of the 3D navigation speed in a multiscale virtual
 environment"[7] paper, and more information can be found there.
 
-## Starting the server
+## Starting the service
 
-TODO
+To start-up a server from scratch, just follow these steps:
+
+```bash
+# Clone the repo
+git clone <reponame>
+cd rmns
+
+# Install dependencies and build C++ code
+npm install
+npm run-script build
+
+# Just to be safe, make sure all tests are OK
+npm test
+
+# Initialize the server
+npm start
+```
+
+The standard setup will use the default configurations, found at
+`config/stand-alone.json`. In case you want to customize any configuration, take a
+look at its [section](#configurations).
+
+### Dependencies
+
+This project depends on a Node.js version later than 0.12.0, and on gcc and
+[node-gyp](https://github.com/nodejs/node-gyp) for the C++ binding.
 
 ## Consuming the service
 
-TODO
+All requests are made through HTTP requests, with a JSON body when necessary.
+Here is the latest API, along usage examples taking into account a local server
+running at the port 8081:
+
+### Points
+
+The `/points` endpoint is for registering 3d points in the server's **k**-d tree.
+The data structure should consist of an array, with a number of elements
+multiple of three, otherwise an error will be returned. There is no size limit
+imposed by the service to the number of points in a single request, the limit
+is implicit by the max size of the HTTP request and possibly the JS compiler.
+
+Example:
+
+```bash
+# Register two points: p1 = vec3(0,1,2), p2 = vec3(0.1,0.2,0.3)
+curl -XPOST -H "Content-type: application/json" -d "[0,1,2,0.1,0.2,0.3]" localhost:8081/points
+```
+
+### Spheres
+
+The `/spheres` endpoint is for registering sphere objects in the service. Every
+sphere must have and ID, since it offers the possibility of being updated.
+An sphere object consists of a vec3 representing its center, and a float value
+representing its radius, plus the id.
+The data structure should consist of an array, where each element is an key/value
+object.
+
+Example:
+
+```bash
+# Register two spheres: s1 = center(5,5,5) and radius = 2, s2 = center(-0.5,0,0.5) and radius = 100
+curl -XPOST -H "Content-type: application/json" -d "[
+    {
+        'id': 1,
+        'radius': 2.0,
+        'center': {'x': 5, 'y': 5, 'z': 5}
+    },
+    {
+        'id': 2,
+        'radius': 100.0,
+        'center': {'x': -0.5, 'y': 0, 'z': 0.5}
+    },
+]" localhost:8081/spheres
+```
+
+### Velocity
+
+The `velocity` endpoint uses the nearest point and sphere information, visible
+and global, and applies it to an heuristic in order to determine the optimal
+velocity of navigation given a scene's state and camera's position. This method
+as uses as input pre-defined values specified at the service's configuration
+file.
+
+Example:
+
+```bash
+# Get optimal speed given current camera state
+curl -XPOST -H "Content-type: application/json" -d "{
+    'eye': {'x': 0, 'y': 0, 'z': 0},
+    'center': {'x': 0, 'y': 0, 'z': -5},
+    'up': {'x': 0, 'y': 1, 'z': 0},
+    'fovy': 60.0,
+    'aspect': 1.66,
+    'znear': 1,
+    'zfar': 1000
+}" localhost:8081/velocity
+```
+
+### Stats
+
+The `/stats` endpoint returns the current number of points and spheres already
+registered in the server. The `/stats` endpoints takes no input.
+
+Example:
+
+```bash
+curl localhost:8081/stats
+```
+
+### Reset
+
+The `/reset` endpoint clears all data already registeredi, returning the server
+to its initial state. The `/reset` endpoints takes no input.
+
+Example:
+
+```bash
+curl localhost:8081/reset
+```
+
+### Nearest Point
+
+The `/nearest_point` endpoint returns the closest point in the **k**-d tree to
+a given point object. There is also the `nearest_vpoint` endpoint, that as the
+velocity endpoint, it takes a camera's state information as input.
+
+Example:
+
+```bash
+# Get nearest point to vec3(5,6,7)
+curl -XPOST -H "Content-type: application/json" -d "{'eye': {'x': 5, 'y': 6, 'z': 7}}" localhost:8081/nearest_point
+
+# Get nearest visible point
+curl -XPOST -H "Content-type: application/json" -d "{
+    'eye': {'x': 5, 'y': 6, 'z': 7},
+    'center': {'x': 0, 'y': 0, 'z': -5},
+    'up': {'x': 0, 'y': 1, 'z': 0},
+    'fovy': 60.0,
+    'aspect': 1.66,
+    'znear': 1,
+    'zfar': 1000
+}" localhost:8081/nearest_vpoint
+```
+
+### Nearest Sphere
+
+The `/nearest_sphere` endpoint returns the closest sphere already registered to
+a given point object. There is also the `nearest_vsphere` endpoint, that as the
+velocity endpoint, it takes a camera's state information as input.
+
+Example:
+
+```bash
+# Get nearest sphere to vec3(5,6,7)
+curl -XPOST -H "Content-type: application/json" -d "{'eye': {'x': 5, 'y': 6, 'z': 7}}" localhost:8081/nearest_sphere
+
+# Get nearest visible sphere
+curl -XPOST -H "Content-type: application/json" -d "{
+    'eye': {'x': 5, 'y': 6, 'z': 7},
+    'center': {'x': 0, 'y': 0, 'z': -5},
+    'up': {'x': 0, 'y': 1, 'z': 0},
+    'fovy': 60.0,
+    'aspect': 1.66,
+    'znear': 1,
+    'zfar': 1000
+}" localhost:8081/nearest_vsphere
+```
 
 ## Configurations
 
-TODO
+All server configurations must be made in a JSON file inside the `config` folder
+at the project's root. By default, the `stand-alone.json` file is used, but this
+can be configured by using the `NODE_ENV` environment variable. For example, if
+defined `NODE_ENV=master`, the server will try to load the `master.json` file
+from the `config` folder.
+
+A current config file for a stand-alone server contains the following variables:
+
+```js
+{
+    // Port number to run service
+    "port": "8081",
+    // Scale for fovy angle to use in visible search, 1.0 will keep default angle
+    "visible_fovy": 0.75,
+    // Trigger preprocessing optimization for joining close points
+    "activate_grid": false,
+    // Cell side size to be used during pre-processingi, only used if "activate_grid" is true
+    "cell_size": 1.0,
+    // Multiplier to be applied over final speed result on the "/velocity" endpoint
+    "velocity_multiplier": 1.0,
+    // Only set to true if you wish to work with slave servers (see next example)
+    "is_master": false
+}
+```
+
+Now the distributed example, pointing to slaves running on ports 8082 and 8083.
+In this example, the server on 8083 is reponsabile for the visible point endpoint,
+while server 8082 is responsabile for the remaining nearest endpoints:
+
+```js
+{
+    "port": "8081",
+    "visible_fovy": 0.75,
+    "activate_grid": false,
+    "cell_size": 1.0,
+    "velocity_multiplier": 1.0,
+    "is_master": true,
+    "slaves": {
+        "/stats": {
+            "ip": "127.0.0.1",
+            "port": "8082"
+        },
+        "/points": [
+            {
+                "ip": "127.0.0.1",
+                "port": "8082"
+            },
+            {
+                "ip": "127.0.0.1",
+                "port": "8083"
+            }
+        ],
+        "/spheres": {
+            "ip": "127.0.0.1",
+            "port": "8082"
+        },
+        "/reset": [
+            {
+                "ip": "127.0.0.1",
+                "port": "8082"
+            },
+            {
+                "ip": "127.0.0.1",
+                "port": "8083"
+            }
+        ],
+        "/nearest_point": {
+            "ip": "127.0.0.1",
+            "port": "8082"
+        },
+        "/nearest_vpoint": {
+            "ip": "127.0.0.1",
+            "port": "8083"
+        },
+        "/nearest_object": {
+            "ip": "127.0.0.1",
+            "port": "8082"
+        },
+        "/nearest_vobject": {
+            "ip": "127.0.0.1",
+            "port": "8082"
+        }
+    }
+}
+```
 
 ## References
 
