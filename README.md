@@ -73,8 +73,10 @@ To start-up a server from scratch, just follow these steps:
 
 ```bash
 # Clone the repo
-git clone <reponame>
-cd rmns
+git clone git@github.com:htaunay/rmns.git
+
+# Go inside the server folder
+cd rmns/server
 
 # Install dependencies and build C++ code
 npm install
