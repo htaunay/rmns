@@ -1,6 +1,6 @@
 {
   "name": "rmns",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Remote Multiscale Navigation System",
   "main": "lib/index.js",
   "bin": "bin/rmns",
