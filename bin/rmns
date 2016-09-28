@@ -10,7 +10,7 @@ var path = require('path');
 var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
 var rmns = require(lib + "/rmns")
 var utils = require(lib + "/utils");
-var config = utils.load_config(process.cwd() + "/" + process.argv[2]);
+var config = utils.load_config(process.argv[2]);
 
 /* ========================================================================= */
 /* ============================= SERVER SETUP ============================== */

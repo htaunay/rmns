@@ -71,7 +71,23 @@ environment"[7] paper, and more information can be found there.
 
 ## Starting the service
 
-To start-up a server from scratch, just follow these steps:
+The straight forward way to start-up a service is through npm and using the
+default configurations (found at `config/stand-alone.json`):
+
+```bash
+# Install rmns globally
+npm install -g rmns
+
+# Start the server
+rmns
+
+# You can also specify a configuration file
+rmns /my/config/file.json
+```
+In case you want to customize any configuration, take a
+look at its [section](#configurations).
+
+To start-up a server from the source, just follow these steps:
 
 ```bash
 # Clone the repo
@@ -87,10 +103,6 @@ npm test
 # Initialize the server
 npm start
 ```
-
-The standard setup will use the default configurations, found at
-`config/stand-alone.json`. In case you want to customize any configuration, take a
-look at its [section](#configurations).
 
 ### Dependencies
 
