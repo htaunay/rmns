@@ -75,9 +75,6 @@ To start-up a server from scratch, just follow these steps:
 # Clone the repo
 git clone git@github.com:htaunay/rmns.git
 
-# Go inside the server folder
-cd rmns/server
-
 # Install dependencies and build C++ code
 npm install
 npm run-script build
