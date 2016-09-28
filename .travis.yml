@@ -5,3 +5,9 @@ node_js:
 
 before_install:
     - npm install -g mocha
+
+script:
+    - npm run cover
+
+after_install:
+    - "cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js"
