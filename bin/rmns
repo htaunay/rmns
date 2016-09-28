@@ -1,0 +1,121 @@
+#!/usr/bin/env node
+
+"use strict";
+require('colors');
+
+var fs = require("fs");
+var http = require("http");
+var path = require('path');
+
+var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
+var rmns = require(lib + "/rmns")
+var utils = require(lib + "/utils");
+var config = utils.load_config(process.cwd() + "/" + process.argv[2]);
+
+/* ========================================================================= */
+/* ============================= SERVER SETUP ============================== */
+/* ========================================================================= */
+
+var router = function(path, data, cb) {
+
+    switch(path) {
+
+        case "/stats":
+            if(config.is_master)    utils.forward(path, data, cb);
+            else                    cb(rmns.get_stats());
+
+            break;
+
+        case "/points":
+            if(config.is_master)    utils.forward(path, data, cb);
+            else                    cb(rmns.register_points(data));
+
+            break;
+
+        case "/spheres":
+            if(config.is_master)    utils.forward(path, data, cb);
+            else                    cb(rmns.register_spheres(data));
+
+            break;
+
+        case "/reset":
+            if(config.is_master)    utils.forward(path, data, cb);
+            else                    cb(rmns.reset());
+
+            break;
+
+        case "/nearest_point":
+            if(config.is_master)    utils.forward(path, data, cb);
+            else                    cb(rmns.nearest_point(data));
+
+            break;
+
+        case "/nearest_vpoint":
+            if(config.is_master)    utils.forward(path, data, cb);
+            else                    cb(rmns.nearest_vpoint(data));
+
+            break;
+
+        case "/nearest_object":
+            if(config.is_master)    utils.forward(path, data, cb);
+            else                    cb(rmns.nearest_object(data));
+
+            break;
+
+        case "/nearest_vobject":
+            if(config.is_master)    utils.forward(path, data, cb);
+            else                    cb(rmns.nearest_vobject(data));
+
+            break;
+
+        case "/velocity":
+            if(config.is_master)    rmns.remote_velocity(data, cb);
+            else                    cb(rmns.local_velocity(data));
+
+            break;
+
+        default:
+            cb(rmns.NOT_FOUND());
+            break;
+    }
+}
+
+var server = module.exports = http.createServer(function (request, response) {
+
+    var timestamp = null;
+
+    var data = "";
+    request.on("data", function(chunk) {
+        data += chunk;
+    });
+
+    request.on("end", function() {
+
+        timestamp = Date.now();
+        router(request.url, data, function(obj) {
+
+            if(obj instanceof Array)
+                obj = obj[0];
+
+            response.statusCode = obj.code;
+            response.setHeader("Content-Type", "application/json");
+
+            var json = { "msg": obj.msg, "timestamp": timestamp };
+            if("result" in obj) {
+                json["result"] = obj.result;
+            }
+
+            response.end(JSON.stringify(json) + "\n");
+        });
+    });
+});
+
+server.start = function() {
+    server.listen(config.port);
+    var startMsg = "Server running at http://127.0.0.1:" + config.port + "/";
+    var cancelMsg = "To stop the server, press CTRL+C";
+    console.log(startMsg.green.bold);
+    console.log(cancelMsg.yellow);
+};
+
+server.start();

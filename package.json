@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "Remote Multiscale Navigation System",
   "main": "lib/index.js",
+  "bin": "bin/rmns",
   "scripts": {
     "build": "rm -rf build && node-gyp configure && node-gyp build",
     "start": "node lib/index.js",
@@ -28,6 +29,7 @@
     "should-http": "0.0.4"
   },
   "dependencies": {
+    "colors": "^1.1.2",
     "math": "0.0.3"
   }
 }
