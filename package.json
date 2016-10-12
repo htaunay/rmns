@@ -7,6 +7,7 @@
   "scripts": {
     "build": "rm -rf build && node-gyp configure && node-gyp build",
     "start": "node lib/index.js",
+    "dev": "nodejs-dashboard node lib/index.js",
     "test": "mocha --timeout 10000 test/*.js",
     "cover": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec test/*.js"
   },
@@ -24,6 +25,7 @@
     "coveralls": "^2.11.14",
     "istanbul": "^0.4.5",
     "mocha": "^2.3.3",
+    "nodejs-dashboard": "^0.1.0",
     "request": "^2.65.0",
     "should": "^7.1.1",
     "should-http": "0.0.4"

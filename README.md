@@ -94,13 +94,17 @@ git clone git@github.com:htaunay/rmns.git
 
 # Install dependencies and build C++ code
 npm install
-npm run-script build
+npm run build
 
 # Just to be safe, make sure all tests are OK
 npm test
 
 # Initialize the server
 npm start
+
+# Monitor the system's performance in real-time
+# Exact same behavior as 'npm start', but with a dashboard
+npm run dev
 ```
 
 ### Dependencies
