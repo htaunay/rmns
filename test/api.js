@@ -72,6 +72,9 @@ var test_velocity = function(expected_res, post_data, done) {
     data.headers = {"content-type" : "application/json"};
     data.body = JSON.stringify(post_data);
 
+    if(post_data.ignoreHeuristic)
+        data.url += "?ignoreHeuristic=true";
+
     request.post(data, function(err, res, body) {
 
         if(err !== null)
@@ -96,12 +99,15 @@ var test_velocity = function(expected_res, post_data, done) {
             r2.velocity.should.be.approximately(r1.velocity, 0.001);
             (r1.nearest === undefined).should.be.false();
             tools.vec3_equal(r1.nearest, r2.nearest, 0.001).should.be.true();
-            (r1.vnearest === undefined).should.be.false();
-            tools.vec3_equal(r1.vnearest, r2.vnearest, 0.001).should.be.true();
-            (r1.cos_similarity === undefined).should.be.false();
-            r2.cos_similarity.should.be.approximately(r1.cos_similarity, 0.01);
-            (r1.multiplier === undefined).should.be.false();
-            r2.multiplier.should.be.approximately(r1.multiplier, 0.001);
+
+            if(!post_data.ignoreHeuristic) {
+                (r1.vnearest === undefined).should.be.false();
+                tools.vec3_equal(r1.vnearest, r2.vnearest, 0.001).should.be.true();
+                (r1.cos_similarity === undefined).should.be.false();
+                r2.cos_similarity.should.be.approximately(r1.cos_similarity, 0.01);
+                (r1.multiplier === undefined).should.be.false();
+                r2.multiplier.should.be.approximately(r1.multiplier, 0.001);
+            }
         }
 
         done();
@@ -362,6 +368,30 @@ describe("The server\'s", function () {
 
                 var res = tools.build_velocity_result(
                     5, 1, 1, 5, nearest, nearest
+                );
+
+                test_velocity(res, camera, done);
+            });
+        });
+
+        it("should ignore the visible object heuristic correctly", function(done) {
+
+            var points = [10,0,0,5,0,0,0,0,0];
+            var pos = tools.build_vec3(1,0,0);
+            var nearest = tools.build_vec3(0,0,0);
+
+            test_post("points", rmns.POINTS_OK(3,3), points, function() {
+
+                var camera = tools.build_camera(
+                    pos,
+                    tools.build_vec3(20,0,0),
+                    tools.build_vec3(0,1,0),
+                    60.0, 16.0/9.0, 0.1, 100
+                );
+                camera.ignoreHeuristic = true;
+
+                var res = tools.build_velocity_result(
+                    1, undefined, 1, 1, nearest, undefined
                 );
 
                 test_velocity(res, camera, done);
