@@ -308,7 +308,8 @@ describe("The server\'s", function () {
                 test_get("stats", rmns.STATS_OK(3,0), function() {
 
                     const nearest = utils.vec3(0,0,0);
-                    test_post("nearest_point", rmns.NEAREST_POINT_OK(nearest, 1), [1,0,0], function() {
+                    const result = {"found": true, "nearest": nearest, "distance": 1};
+                    test_post("nearest_point", rmns.NEAREST_POINT_OK(result), {'eye': {'x': 1, 'y': 0, 'z': 0}}, function() {
                         done();
                     });
                 });
