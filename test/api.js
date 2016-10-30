@@ -298,6 +298,24 @@ describe("The server\'s", function () {
         });
     });
 
+    describe("nearest_point endpoint", function() {
+
+        it("should return the the correct nearest point", function(done) {
+
+            var points = [10,10,10,5,5,5,0,0,0];
+            test_post("points", rmns.POINTS_OK(3,3), points, function() {
+
+                test_get("stats", rmns.STATS_OK(3,0), function() {
+
+                    const nearest = utils.vec3(0,0,0);
+                    test_post("nearest_point", rmns.NEAREST_POINT_OK(nearest, 1), [1,0,0], function() {
+                        done();
+                    });
+                });
+            });
+        });
+    });
+
     describe("velocity endpoint", function() {
 
         it("should not allow array as input", function(done) {
