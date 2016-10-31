@@ -130,7 +130,7 @@ Example:
 
 ```bash
 # Register two points: p1 = vec3(0,1,2), p2 = vec3(0.1,0.2,0.3)
-curl -XPOST -H "Content-type: application/json" -d "[0,1,2,0.1,0.2,0.3]" localhost:8081/points
+curl -XPOST -H 'Content-type: application/json' -d '[0,1,2,0.1,0.2,0.3]' localhost:8081/points
 ```
 
 ### Spheres
@@ -146,18 +146,18 @@ Example:
 
 ```bash
 # Register two spheres: s1 = center(5,5,5) and radius = 2, s2 = center(-0.5,0,0.5) and radius = 100
-curl -XPOST -H "Content-type: application/json" -d "[
+curl -XPOST -H "Content-type: application/json" -d '[
     {
-        'id': 1,
-        'radius': 2.0,
-        'center': {'x': 5, 'y': 5, 'z': 5}
+        "id": 1,
+        "radius": 2.0,
+        "center": {"x": 5, "y": 5, "z": 5}
     },
     {
-        'id': 2,
-        'radius': 100.0,
-        'center': {'x': -0.5, 'y': 0, 'z': 0.5}
+        "id": 2,
+        "radius": 100.0,
+        "center": {"x": -0.5, "y": 0, "z": 0.5}
     },
-]" localhost:8081/spheres
+]' localhost:8081/spheres
 ```
 
 ### Velocity
@@ -172,15 +172,15 @@ Example:
 
 ```bash
 # Get optimal speed given current camera state
-curl -XPOST -H "Content-type: application/json" -d "{
-    'eye': {'x': 0, 'y': 0, 'z': 0},
-    'center': {'x': 0, 'y': 0, 'z': -5},
-    'up': {'x': 0, 'y': 1, 'z': 0},
-    'fovy': 60.0,
-    'aspect': 1.66,
-    'znear': 1,
-    'zfar': 1000
-}" localhost:8081/velocity
+curl -XPOST -H 'Content-type: application/json' -d '{
+    "eye": {"x": 0, "y": 0, "z": 0},
+    "center": {"x": 0, "y": 0, "z": -5},
+    "up": {"x": 0, "y": 1, "z": 0},
+    "fovy": 60.0,
+    "aspect": 1.66,
+    "znear": 1,
+    "zfar": 1000
+}' localhost:8081/velocity
 ```
 
 ### Stats
@@ -215,18 +215,18 @@ Example:
 
 ```bash
 # Get nearest point to vec3(5,6,7)
-curl -XPOST -H "Content-type: application/json" -d "{'eye': {'x': 5, 'y': 6, 'z': 7}}" localhost:8081/nearest_point
+curl -XPOST -H 'Content-type: application/json' -d '{"eye": {"x": 5, "y": 6, "z": 7}}' localhost:8081/nearest_point
 
 # Get nearest visible point
-curl -XPOST -H "Content-type: application/json" -d "{
-    'eye': {'x': 5, 'y': 6, 'z': 7},
-    'center': {'x': 0, 'y': 0, 'z': -5},
-    'up': {'x': 0, 'y': 1, 'z': 0},
-    'fovy': 60.0,
-    'aspect': 1.66,
-    'znear': 1,
-    'zfar': 1000
-}" localhost:8081/nearest_vpoint
+curl -XPOST -H 'Content-type: application/json' -d '{
+    "eye": {"x": 5, "y": 6, "z": 7},
+    "center": {"x": 0, "y": 0, "z": -5},
+    "up": {"x": 0, "y": 1, "z": 0},
+    "fovy": 60.0,
+    "aspect": 1.66,
+    "znear": 1,
+    "zfar": 1000
+}' localhost:8081/nearest_vpoint
 ```
 
 ### Nearest Sphere
@@ -239,18 +239,18 @@ Example:
 
 ```bash
 # Get nearest sphere to vec3(5,6,7)
-curl -XPOST -H "Content-type: application/json" -d "{'eye': {'x': 5, 'y': 6, 'z': 7}}" localhost:8081/nearest_sphere
+curl -XPOST -H 'Content-type: application/json' -d '{"eye": {"x": 5, "y": 6, "z": 7}}' localhost:8081/nearest_sphere
 
 # Get nearest visible sphere
-curl -XPOST -H "Content-type: application/json" -d "{
-    'eye': {'x': 5, 'y': 6, 'z': 7},
-    'center': {'x': 0, 'y': 0, 'z': -5},
-    'up': {'x': 0, 'y': 1, 'z': 0},
-    'fovy': 60.0,
-    'aspect': 1.66,
-    'znear': 1,
-    'zfar': 1000
-}" localhost:8081/nearest_vsphere
+curl -XPOST -H 'Content-type: application/json' -d '{
+    "eye": {"x": 5, "y": 6, "z": 7},
+    "center": {"x": 0, "y": 0, "z": -5},
+    "up": {"x": 0, "y": 1, "z": 0},
+    "fovy": 60.0,
+    "aspect": 1.66,
+    "znear": 1,
+    "zfar": 1000
+}' localhost:8081/nearest_vsphere
 ```
 
 ## Configurations
