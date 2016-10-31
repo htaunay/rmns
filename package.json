@@ -33,6 +33,7 @@
   "dependencies": {
     "colors": "^1.1.2",
     "math": "0.0.3",
+    "nan": "^2.4.0",
     "node-version-compare": "^1.0.1"
   }
 }

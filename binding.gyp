@@ -15,7 +15,10 @@
                 '<!@(command -v iojs > /dev/null && echo "__NODE_V0_11_OR_12__" || true)',
                 '<!@(node -v |grep "v0\.10" > /dev/null && echo "__NODE_V0_10__" || true)',
             ],
-            "include_dirs": ["headers"],
+            "include_dirs": [
+                "headers",
+                "<!(node -e \"require('nan')\")"
+            ],
             "cflags!": ["-fno-exceptions"],
             "cflags_cc!": ["-fno-exceptions"],
             "xcode_settings": {
