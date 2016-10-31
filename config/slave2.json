@@ -1,5 +1,5 @@
 {
-    "port": "8089",
+    "port": "7089",
     "visible_fovy": 0.75,
     "cell_size": 1.0,
     "activate_grid": false,

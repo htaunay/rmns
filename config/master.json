@@ -1,5 +1,5 @@
 {
-    "port": "8087",
+    "port": "7087",
     "visible_fovy": 0.75,
     "cell_size": 1.0,
     "activate_grid": false,
@@ -8,47 +8,47 @@
     "slaves": {
         "/stats": {
             "ip": "127.0.0.1",
-            "port": "8088"
+            "port": "7088"
         },
         "/points": [
             {
                 "ip": "127.0.0.1",
-                "port": "8088"
+                "port": "7088"
             },
             {
                 "ip": "127.0.0.1",
-                "port": "8089"
+                "port": "7089"
             }
         ],
         "/spheres": {
             "ip": "127.0.0.1",
-            "port": "8088"
+            "port": "7088"
         },
         "/reset": [
             {
                 "ip": "127.0.0.1",
-                "port": "8088"
+                "port": "7088"
             },
             {
                 "ip": "127.0.0.1",
-                "port": "8089"
+                "port": "7089"
             }
         ],
         "/nearest_point": {
             "ip": "127.0.0.1",
-            "port": "8088"
+            "port": "7088"
         },
         "/nearest_vpoint": {
             "ip": "127.0.0.1",
-            "port": "8089"
+            "port": "7089"
         },
         "/nearest_object": {
             "ip": "127.0.0.1",
-            "port": "8088"
+            "port": "7088"
         },
         "/nearest_vobject": {
             "ip": "127.0.0.1",
-            "port": "8088"
+            "port": "7088"
         }
     }
 }
