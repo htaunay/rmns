@@ -29,6 +29,9 @@ describe("The server\"s", function () {
             master = exec("NODE_ENV=master mocha --timeout 10000 test/*.js",
                 function(error, stdout, stderr) {
 
+                    console.log(stdout);
+                    console.log("+++++++++++++++++");
+                    console.log(stderr);
                     (error === null).should.be.true();
                     done(); 
                 }
