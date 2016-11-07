@@ -3,14 +3,15 @@
 "use strict";
 require('colors');
 
-var fs = require("fs");
-var http = require("http");
-var path = require('path');
+const fs = require("fs");
+const url = require("url");
+const http = require("http");
+const path = require('path');
 
-var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
-var rmns = require(lib + "/rmns")
-var utils = require(lib + "/utils");
-var config = utils.load_config(process.argv[2]);
+const lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
+const rmns = require(lib + "/rmns")
+const utils = require(lib + "/utils");
+const config = utils.load_config(process.argv[2]);
 
 /* ========================================================================= */
 /* ============================= SERVER SETUP ============================== */
